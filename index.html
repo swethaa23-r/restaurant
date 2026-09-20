@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stackly | Premium Restaurant</title>
+    <meta name="description" content="Experience Stackly, a premium fine dining restaurant offering seasonal ingredients, exquisite flavors, and an unforgettable ambiance.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden;   overflow-x: hidden; max-width: 100%;}
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Navbar Transitions */
+        .nav-scrolled { background-color: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); py: 1rem !important; }
+        .nav-scrolled .nav-link { color: #4a5568 !important; }
+        .nav-scrolled .nav-link:hover { color: #8c6052 !important; }
+        .nav-scrolled .logo-text { color: #271712 !important; }
+        .nav-scrolled .mobile-btn { color: #271712 !important; }
+        
+        /* Mobile Menu */
+        .mobile-menu { transition: transform 0.4s ease-in-out; }
+        .mobile-menu-closed { transform: translateX(100%); }
+        
+        /* Custom Overlays & Effects */
+        .hero-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7)); }
+        .cta-overlay { background: linear-gradient(rgba(39, 23, 18, 0.8), rgba(39, 23, 18, 0.9)); }
+        .menu-card:hover .menu-img { transform: scale(1.08); }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        
+        /* Buttons */
+        .btn-primary { background-color: #8c6052; color: white; transition: background-color 0.3s, transform 0.2s; }
+        .btn-primary:hover { background-color: #6b473a; transform: translateY(-2px); }
+        .btn-outline { border: 2px solid white; color: white; transition: all 0.3s; }
+        .btn-outline:hover { background-color: white; color: #271712; transform: translateY(-2px); }
+    
+        /* Hide scrollbar for gallery */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+    <style>
+        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 25s linear infinite; }
+        .animate-marquee:hover { animation-play-state: paused; }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+<div id="page-wrapper" class="overflow-x-hidden w-full relative">
+
+    <!-- Navbar -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 bg-white shadow-md">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <!-- Left -->
+            <a href="index.html" class="text-3xl font-serif font-bold logo-text text-gray-900 transition-colors duration-300 lg:w-1/4"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+            
+            <!-- Center -->
+            <nav class="hidden lg:flex flex-1 justify-center space-x-8">
+                <a href="index.html" class="nav-link text-primary-600 font-medium transition-colors border-b-2 border-primary-600">Home</a>
+                <a href="about.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">About</a>
+                <a href="menu.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Menu</a>
+                <a href="gallery.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Gallery</a>
+                <a href="blog.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Blog</a>
+                <a href="contact.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Contact</a>
+            </nav>
+
+            <!-- Right -->
+            <div class="hidden lg:flex items-center justify-end space-x-6 lg:w-1/4">
+                <a id="nav-login-btn" href="login.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Login</a>
+                <a href="reservations.html" class="btn-primary px-7 py-2.5 rounded-full font-medium shadow-lg hover:shadow-xl">Book a Table</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button id="mobile-toggle" class="lg:hidden mobile-btn text-gray-900 text-2xl focus:outline-none transition-colors">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-gray-900/60 z-[60] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div id="mobile-menu-content" class="absolute top-0 right-0 w-full max-w-full h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <span><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></span>
+                <button id="mobile-close" class="text-2xl text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col p-6 space-y-5 text-lg overflow-y-auto pb-20">
+                <a href="index.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Home</a>
+                <a href="about.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">About</a>
+                <a href="menu.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Menu</a>
+                <a href="gallery.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Gallery</a>
+                <a href="blog.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Blog</a>
+                <a href="contact.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Contact</a>
+                <hr class="border-gray-100 my-2">
+                <a href="login.html" id="mobile-nav-login" class="mobile-nav-link font-medium text-gray-900 hover:text-primary-600 transition-colors"><i class="fa-solid fa-user mr-3 text-gray-400"></i>Login</a>
+                
+                <a href="reservations.html" class="mobile-nav-link btn-primary py-3 rounded-full font-medium text-center w-full shadow-md text-white mt-4">Book a Table</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+            <img src="img/index_hero.webp" alt="Restaurant Interior" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 hero-overlay"></div>
+            
+            <div class="container mx-auto px-6 relative z-10 text-center text-white mt-20">
+                <span class="block font-medium tracking-[0.2em] uppercase text-sm mb-6 text-primary-200" data-aos="fade-up">Welcome to Stackly</span>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-8 leading-tight" data-aos="fade-up" data-aos-delay="100">A Taste of <br/><span class="italic text-primary-200">Perfection</span></h1>
+                <p class="text-lg md:text-xl font-light mb-12 max-w-2xl mx-auto text-gray-200" data-aos="fade-up" data-aos-delay="200">Experience culinary excellence with our seasonal menus, crafted with passion and meticulous attention to detail.</p>
+                <div class="flex flex-col sm:flex-row gap-5 justify-center items-center" data-aos="fade-up" data-aos-delay="300">
+                    <a href="reservations.html" class="btn-primary px-8 py-4 rounded-full text-lg font-medium w-full sm:w-auto text-center shadow-xl">Book a Table</a>
+                    <a href="menu.html" class="btn-outline px-8 py-4 rounded-full text-lg font-medium w-full sm:w-auto text-center">Explore Menu</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Preview -->
+        <section class="py-24 bg-white relative">
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <div data-aos="fade-right">
+                        <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold mb-6 text-gray-900">The Art of <br/>Fine Dining</h2>
+                        <div class="w-16 h-1 bg-primary-600 mb-8"></div>
+                        <p class="text-gray-600 mb-6 leading-relaxed text-lg">At Stackly, we believe that great food starts with exceptional ingredients. Our chefs work closely with local farmers and purveyors to source the freshest seasonal produce, creating dishes that are both innovative and deeply rooted in culinary tradition.</p>
+                        <p class="text-gray-600 mb-8 leading-relaxed text-lg">Every meal is a journey of flavors, designed to delight the senses and create unforgettable memories.</p>
+                        <a href="about.html" class="text-primary-600 font-bold hover:text-primary-800 tracking-wide flex items-center group uppercase text-sm">
+                            Discover our story <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform"></i>
+                        </a>
+                    </div>
+                    <div class="relative h-96 md:h-[500px] w-full" data-aos="fade-left">
+                        <img loading="lazy" src="img/atmosphere1.webp" alt="Fine Dining Experience" class="w-full h-full object-cover rounded-tl-[100px] rounded-br-[100px] shadow-2xl">
+                        <div class="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hidden md:block">
+                            <p class="font-serif text-4xl font-bold text-primary-600 mb-1">15+</p>
+                            <p class="text-gray-500 font-medium text-sm tracking-wider uppercase">Years of Excellence</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Signature Dishes / Popular Menu -->
+        <section class="py-24 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16" data-aos="fade-up">
+                    <span class="text-primary-600 font-bold tracking-[0.2em] uppercase text-sm mb-4 block">Culinary Masterpieces</span>
+                    <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold text-gray-900">Signature Dishes</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Dish 1 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 menu-card border border-gray-100 group" data-aos="fade-up" data-aos-delay="100">
+                        <div class="h-48 w-full overflow-hidden relative">
+                            <img loading="lazy" src="img/Wagyu_Ribeye.webp" alt="Wagyu Ribeye" class="w-full h-full object-cover menu-img transition-transform duration-700">
+                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur px-4 py-1.5 rounded-full font-bold text-primary-800 shadow-sm">$85</div>
+                        </div>
+                        <div class="p-8 text-center relative bg-white">
+                            <h3 class="text-2xl font-serif font-bold mb-3">Wagyu Ribeye</h3>
+                            <p class="text-gray-500 mb-6 line-clamp-2 text-sm leading-relaxed">A5 Japanese Wagyu, pomme purée, roasted heritage carrots, bone marrow butter.</p>
+                            <a href="404.html" class="inline-block border border-gray-300 text-gray-700 hover:bg-primary-600 hover:text-white hover:border-primary-600 px-6 py-2 rounded-full text-sm font-medium transition duration-300">View Details</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Dish 2 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 menu-card border border-gray-100 group" data-aos="fade-up" data-aos-delay="200">
+                        <div class="h-48 w-full overflow-hidden relative">
+                            <img loading="lazy" src="img/Lobster_Ravioli.webp" alt="Lobster Ravioli" class="w-full h-full object-cover menu-img transition-transform duration-700">
+                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur px-4 py-1.5 rounded-full font-bold text-primary-800 shadow-sm">$42</div>
+                        </div>
+                        <div class="p-8 text-center relative bg-white">
+                            <h3 class="text-2xl font-serif font-bold mb-3">Lobster Ravioli</h3>
+                            <p class="text-gray-500 mb-6 line-clamp-2 text-sm leading-relaxed">Hand-made pasta, fresh Maine lobster, saffron cream sauce, topped with caviar.</p>
+                            <a href="404.html" class="inline-block border border-gray-300 text-gray-700 hover:bg-primary-600 hover:text-white hover:border-primary-600 px-6 py-2 rounded-full text-sm font-medium transition duration-300">View Details</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Dish 3 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 menu-card border border-gray-100 group" data-aos="fade-up" data-aos-delay="300">
+                        <div class="h-48 w-full overflow-hidden relative">
+                            <img loading="lazy" src="img/Roasted_Aubergine.webp" alt="Roasted Aubergine" class="w-full h-full object-cover menu-img transition-transform duration-700">
+                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur px-4 py-1.5 rounded-full font-bold text-primary-800 shadow-sm">$24</div>
+                        </div>
+                        <div class="p-8 text-center relative bg-white">
+                            <h3 class="text-2xl font-serif font-bold mb-3">Roasted Aubergine</h3>
+                            <p class="text-gray-500 mb-6 line-clamp-2 text-sm leading-relaxed">Miso glaze, toasted sesame, spring onion, crispy shallots. A vegetarian delight.</p>
+                            <a href="404.html" class="inline-block border border-gray-300 text-gray-700 hover:bg-primary-600 hover:text-white hover:border-primary-600 px-6 py-2 rounded-full text-sm font-medium transition duration-300">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-16">
+                    <a href="menu.html" class="btn-primary px-10 py-4 rounded-full text-lg font-medium inline-block shadow-lg">Explore Full Menu</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chef/Restaurant Story -->
+        <section class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="bg-primary-50 rounded-3xl overflow-hidden flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2" data-aos="fade-right">
+                        <img loading="lazy" src="img/chef_marcus.webp" alt="Executive Chef Marcus Chen" class="w-full aspect-square object-cover rounded-2xl shadow-xl">
+                    </div>
+                    <div class="md:w-1/2 p-12 md:p-16 flex flex-col justify-center" data-aos="fade-left">
+                        <i class="fa-solid fa-quote-left text-4xl text-primary-300 mb-6"></i>
+                        <h3 class="text-3xl font-serif font-bold text-gray-900 mb-6 leading-snug">"Cooking is not just about ingredients, it's about the emotion and the story we serve on the plate."</h3>
+                        <p class="text-gray-600 mb-8 leading-relaxed">With over two decades of Michelin-star experience, Executive Chef Marcus Chen brings a unique blend of traditional techniques and modern innovation to Stackly's kitchen.</p>
+                        <div>
+                            <p class="font-bold text-gray-900 text-lg">Marcus Chen</p>
+                            <p class="text-primary-600 text-sm tracking-wider uppercase font-medium">Executive Chef</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Special Offers Section -->
+        <section class="py-20 bg-primary-900 text-white relative overflow-hidden">
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div data-aos="fade-right">
+                        <span class="inline-block py-1 px-3 border border-primary-400 text-primary-200 rounded-full text-xs font-bold uppercase tracking-widest mb-6">Limited Time</span>
+                        <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold mb-6">Autumn Tasting Menu</h2>
+                        <p class="text-gray-300 mb-8 text-lg leading-relaxed">Join us this season for a spectacular 7-course tasting journey highlighting the finest autumnal ingredients sourced from local farms.</p>
+                        <div class="flex items-center gap-6">
+                            <p class="text-3xl font-serif font-bold text-primary-200">$120 <span class="text-sm font-sans font-normal text-gray-400 block">per person</span></p>
+                            <a href="reservations.html" class="bg-white text-primary-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors shadow-lg">Reserve a Table</a>
+                        </div>
+                    </div>
+                    <div data-aos="fade-left" class="relative group hidden md:block">
+                        <img src="img/Autumn_Tasting_Menu.webp" alt="Autumn Tasting Menu" class="w-full aspect-[4/3] object-cover rounded-2xl shadow-2xl transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Preview -->
+        <section class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12" data-aos="fade-up">
+                    <div>
+                        <span class="text-primary-600 font-bold tracking-[0.2em] uppercase text-sm mb-4 block">Atmosphere</span>
+                        <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold text-gray-900">Follow the Experience</h2>
+                    </div>
+                    <a href="gallery.html" class="hidden md:inline-block border-b-2 border-primary-600 text-primary-600 font-bold hover:text-primary-800 hover:border-primary-800 transition-colors pb-1 uppercase tracking-wider text-sm mt-6">View Full Gallery</a>
+                </div>
+                
+                
+<div class="relative flex overflow-hidden w-full group pb-8">
+        <div class="flex w-max animate-marquee gap-4">
+            <!-- First Set (8 unique images) -->
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/menu_tasting_plate.webp" alt="Chef Tasting Course" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/handmade_pasta.webp" alt="Handmade Pasta" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/Wagyu_Ribeye.webp" alt="Wagyu Ribeye" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/menu_chocolate_tart.webp" alt="Valrhona Chocolate Tart" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/atmosphere.webp" alt="Main Dining Room" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/atmosphere3.webp" alt="The Bar Lounge" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/fine_dining.webp" alt="The Cellar Room" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/atmosphere4.webp" alt="The Patio" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+        
+            <!-- Second Set (Duplicate/Extended Set for seamless looping) -->
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/chef_marcus.webp" alt="Executive Chef Marcus" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/team_pastry.webp" alt="Pastry Chef David" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/team_sommelier.webp" alt="Head Sommelier Elena" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/team_sous.webp" alt="Sous Chef Kenji" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/event_cocktails.webp" alt="Signature Cocktails" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/menu_wine_pairing.webp" alt="Wine Pairing" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/atmosphere1.webp" alt="Private Dining" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+            <div class="gallery-item relative overflow-hidden rounded-xl aspect-square group cursor-pointer w-40 md:w-56 shrink-0"><img loading="lazy" src="img/atmosphere2.webp" alt="Candlelight Table" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
+        </div></div></div></section>
+
+        <!-- Customer Testimonials -->
+        <section class="py-24 bg-gray-50 border-t border-gray-100">
+            <div class="container mx-auto px-6 text-center">
+                <span class="text-primary-600 font-bold tracking-[0.2em] uppercase text-sm mb-4 block" data-aos="fade-up">Reviews</span>
+                <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold text-gray-900 mb-16" data-aos="fade-up" data-aos-delay="100">Guest Experiences</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 text-left" data-aos="fade-up" data-aos-delay="100">
+                        <div class="flex text-primary-500 mb-6">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 mb-8 italic leading-relaxed">"An absolute masterpiece of flavors. The Wagyu melted in my mouth, and the service was impeccably timed. Best dining experience in the city."</p>
+                        <div class="flex items-center">
+                            <img src="img/avatar_1.webp" alt="Sarah Jenkins" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <p class="font-bold text-gray-900">Sarah Jenkins</p>
+                                <p class="text-sm text-gray-500">Local Guide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 text-left" data-aos="fade-up" data-aos-delay="200">
+                        <div class="flex text-primary-500 mb-6">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 mb-8 italic leading-relaxed">"Stackly elevates dining to an art form. Every dish was beautifully presented and thoughtfully paired with wine by their expert sommelier."</p>
+                        <div class="flex items-center">
+                            <img src="img/avatar_2.webp" alt="Michael Roberts" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <p class="font-bold text-gray-900">Michael Roberts</p>
+                                <p class="text-sm text-gray-500">Food Critic</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 text-left" data-aos="fade-up" data-aos-delay="300">
+                        <div class="flex text-primary-500 mb-6">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                        </div>
+                        <p class="text-gray-600 mb-8 italic leading-relaxed">"We celebrated our anniversary here and they made it truly special. The atmosphere is romantic yet modern, and the desserts are divine."</p>
+                        <div class="flex items-center">
+                            <img src="img/avatar_3.webp" alt="Amanda Lewis" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <p class="font-bold text-gray-900">Amanda Lewis</p>
+                                <p class="text-sm text-gray-500">Guest</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Preview -->
+        <section class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16" data-aos="fade-up">
+                    <div>
+                        <span class="text-primary-600 font-bold tracking-[0.2em] uppercase text-sm mb-4 block">Articles</span>
+                        <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold text-gray-900">Latest News & Stories</h2>
+                    </div>
+                    <a href="blog.html" class="hidden md:inline-block border-b-2 border-primary-600 text-primary-600 font-bold hover:text-primary-800 hover:border-primary-800 transition-colors pb-1 uppercase tracking-wider text-sm mt-6">View All Articles</a>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div class="group cursor-pointer" data-aos="fade-up" data-aos-delay="100">
+                        <div class="overflow-hidden rounded-[2rem] mb-6 shadow-lg relative">
+                            <img loading="lazy" src="img/handmade_pasta.webp" alt="Mastering the Art of Handmade Pasta" class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <div class="flex items-center text-sm font-medium text-gray-500 mb-3 space-x-4">
+                            <span class="text-primary-600 font-bold uppercase tracking-widest">Recipes</span>
+                            <span>•</span>
+                            <span>October 12, 2026</span>
+                        </div>
+                        <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Mastering the Art of Handmade Pasta</h3>
+                        <p class="text-gray-600 line-clamp-2">Our head chef shares the secrets to creating the perfect pasta dough from scratch, ensuring perfect texture every time.</p>
+                    </div>
+                    
+                    <div class="group cursor-pointer" data-aos="fade-up" data-aos-delay="200">
+                        <div class="overflow-hidden rounded-[2rem] mb-6 shadow-lg relative">
+                            <img loading="lazy" src="img/First_Michelin_Star.webp" alt="Stackly Awarded Its First Michelin Star" class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <div class="flex items-center text-sm font-medium text-gray-500 mb-3 space-x-4">
+                            <span class="text-primary-600 font-bold uppercase tracking-widest">News</span>
+                            <span>•</span>
+                            <span>September 28, 2026</span>
+                        </div>
+                        <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Stackly Awarded Its First Michelin Star</h3>
+                        <p class="text-gray-600 line-clamp-2">We are incredibly proud and humbled to announce that our team's dedication has been recognized with this prestigious culinary award.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reservation CTA Section -->
+        <section class="relative py-24 bg-fixed bg-center bg-cover" style="background-image: url('img/chef_plating_in_homepage.webp');">
+            <div class="absolute inset-0 cta-overlay"></div>
+            <div class="container mx-auto px-6 relative z-10 text-center text-white">
+                <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold mb-6" data-aos="fade-up">Join Us For Dinner</h2>
+                <p class="text-lg text-primary-200 max-w-xl mx-auto mb-10" data-aos="fade-up" data-aos-delay="100">Secure your table in advance and prepare for a dining experience that will tantalize your tastebuds.</p>
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <a href="contact.html" class="bg-white text-primary-900 hover:bg-gray-100 px-10 py-4 rounded-full text-lg font-bold transition duration-300 inline-block shadow-xl">Book Your Experience</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location / Contact info -->
+        <section class="py-24 bg-white border-b border-gray-200">
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <div data-aos="fade-right">
+                        <h2 class="text-4xl font-serif font-bold text-gray-900 mb-8">Visit Stackly</h2>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center text-xl shrink-0 mr-6 mt-1">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">Location</h4>
+                                <p class="text-gray-600">MMR Complex, Chinna Thirupathi<br/>Near Chinna Muniyappan Temple, Salem 636008</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center text-xl shrink-0 mr-6 mt-1">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">Opening Hours</h4>
+                                <ul class="text-gray-600 space-y-1">
+                                    <li><span class="font-medium text-gray-800">Mon - Thu:</span> 11:00 AM - 10:00 PM</li>
+                                    <li><span class="font-medium text-gray-800">Fri - Sat:</span> 11:00 AM - 11:30 PM</li>
+                                    <li><span class="font-medium text-gray-800">Sunday:</span> 10:00 AM - 9:00 PM</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center text-xl shrink-0 mr-6 mt-1">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">Contact</h4>
+                                <p class="text-gray-600 mb-1">+91 90909090 90</p>
+                                <p class="text-primary-600 font-medium">info@stackly.resort<br/>event@stackly.resort</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-full min-h-[400px] w-full rounded-2xl overflow-hidden shadow-lg" data-aos="fade-left">
+                        <iframe src="https://maps.google.com/maps?q=MMR+Complex,+Chinna+Thirupathi,+Near+Chinna+Muniyappan+Temple,+Salem+636008&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-20 pb-10 mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-1">
+                    <h3 class="mb-6"><img src="logo.webp" alt="Stackly Logo" class="h-12 w-auto inline brightness-0 invert max-w-[180px] sm:max-w-[220px] object-contain"></h3>
+                    <p class="leading-relaxed mb-6 text-gray-400">A premium dining experience focused on seasonal ingredients and innovative culinary techniques in a modern, elegant setting.</p>
+                    <div class="flex space-x-4">
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Quick Link</h4>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="hover:text-primary-400 transition-colors">Home</a></li>
+                        <li><a href="about.html" class="hover:text-primary-400 transition-colors">About</a></li>
+                        <li><a href="menu.html" class="hover:text-primary-400 transition-colors">Menu</a></li>
+                        <li><a href="gallery.html" class="hover:text-primary-400 transition-colors">Gallery</a></li>
+                        <li><a href="blog.html" class="hover:text-primary-400 transition-colors">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-primary-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Information</h4>
+                    <ul class="space-y-3">
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Reservations</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Contact Us</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Customer Login</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Gift Cards</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Subscribe to receive updates, access to exclusive events, and seasonal menus.</p>
+                    <form class="flex" action="404.html" method="GET">
+                        <input type="email" required oninvalid="this.setCustomValidity('pls enter the mail id')" oninput="this.setCustomValidity('')" placeholder="Email address" class="bg-gray-800 text-white px-4 py-3 rounded-l-lg outline-none focus:ring-1 focus:ring-primary-500 w-full border border-gray-700">
+                        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-r-lg transition-colors font-medium">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2026 Stackly Restaurant. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="404.html" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="404.html" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS animations
+        AOS.init({ 
+            duration: 900, 
+            once: true, 
+            offset: 80,
+            easing: 'ease-out-cubic'
+        });
+        
+        // Solid White Navbar - Scroll Effect Removed
+
+        // Mobile Menu Functionality
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+                const mobileMenuContent = document.getElementById('mobile-menu-content');
+        if(mobileToggle && mobileMenu && mobileMenuContent) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenuContent.classList.remove('translate-x-full');
+                    document.body.style.overflow = 'hidden';
+                }, 10);
+            });
+        }
+        
+        if(mobileClose && mobileMenu && mobileMenuContent) {
+            mobileClose.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenuContent.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        }
+    
+        // Check session to update nav
+        document.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('stackly_session');
+            const loginBtn = document.getElementById('nav-login-btn');
+            const mobLoginBtn = document.getElementById('mobile-nav-login');
+            
+            if(session) {
+                const user = JSON.parse(session);
+                const dashLink = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+                
+                if(loginBtn) {
+                    loginBtn.innerText = 'Dashboard';
+                    loginBtn.href = dashLink;
+                }
+                
+            }
+            
+            // Close mobile menu on link click
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(typeof closeMenu === 'function') closeMenu();
+                });
+            });
+        });
+    
+    </script>
+
+    
+</div>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Stackly Premium Restaurant</title>
+    <meta name="description" content="Stackly Restaurant Management Portal for administrators.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7', 400: '#d2bab0', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        
+        html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background-color: #f3f4f6;  overflow-x: hidden;   max-width: 100%;}
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Dashboard Layout */
+        .sidebar { width: 280px; transition: transform 0.3s ease; }
+        .main-content { margin-left: 280px; transition: margin 0.3s ease; }
+        
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); z-index: 50; width: 100%; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+        
+        /* Cards & Tables */
+        .admin-card { background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); border: 1px solid #e5e7eb; overflow: hidden; }
+        .table-row { transition: background-color 0.2s; border-bottom: 1px solid #f3f4f6; }
+        .table-row:hover { background-color: #f9fafb; }
+        
+        /* Dark Sidebar Navigation */
+        .nav-item { display: flex; items-center: center; padding: 0.75rem 1.5rem; color: #9ca3af; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; border-left: 4px solid transparent; }
+        .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); color: #ffffff; }
+        .nav-item.active { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; border-left-color: #a37a6b; }
+        .nav-icon { width: 20px; text-align: center; margin-right: 12px; font-size: 1rem; }
+        
+        /* Badges */
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-confirmed { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-seated { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-completed { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-cancelled { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+
+    <script>
+        const session = JSON.parse(localStorage.getItem('stackly_session'));
+        if (!session || session.role !== 'admin') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body class="text-gray-800 flex min-h-screen overflow-x-hidden">>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+    <!-- Dark Sidebar (Differentiates from User Dashboard) -->
+    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-screen bg-gray-900 flex flex-col justify-between">
+        <div class="flex-1 overflow-y-auto hide-scrollbar pb-6">
+            <!-- Logo -->
+            <div class="h-20 flex items-center px-8 border-b border-gray-800 bg-gray-900 sticky top-0 z-10">
+                <a href="index.html" class="text-2xl font-serif font-bold text-white tracking-wide">Stackly <span class="text-xs font-sans text-primary-400 uppercase tracking-widest ml-1 bg-primary-900/50 px-2 py-1 rounded">Admin</span></a>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="py-6 space-y-1">
+                <div class="px-6 mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Dashboard</div>
+                <a href="#" class="nav-item active">
+                    <i class="fa-solid fa-chart-pie nav-icon"></i> Overview
+                </a>
+                
+                <div class="px-6 mt-6 mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Operations</div>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-book-open nav-icon"></i> Reservations
+                </a>
+                <a href="#" class="nav-item flex justify-between items-center w-full">
+                    <div><i class="fa-solid fa-users nav-icon"></i> Customers</div>
+                </a>
+                
+                <div class="px-6 mt-6 mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Content Management</div>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-utensils nav-icon"></i> Menu Management
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-newspaper nav-icon"></i> Blog Management
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-images nav-icon"></i> Gallery Management
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-tags nav-icon"></i> Offers & Promotions
+                </a>
+                
+                <div class="px-6 mt-6 mb-2 text-xs font-bold text-gray-500 uppercase tracking-wider">System</div>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-file-invoice nav-icon"></i> Reports
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear nav-icon"></i> Settings
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Bottom Section -->
+        <div class="p-4 border-t border-gray-800 bg-gray-900">
+            <a href="login.html" class="flex items-center text-gray-400 hover:text-red-400 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-800">
+                <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content overflow-x-hidden overflow-y-auto flex-grow flex flex-col min-h-screen">
+        
+        <!-- Header -->
+        <!-- Header -->
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center px-6 lg:px-10 sticky top-0 z-30">
+            <!-- Mobile Header (Visible only on mobile) -->
+            <div class="lg:hidden flex w-full justify-between items-center relative">
+                <!-- Hamburger -->
+                <button id="menu-btn-mobile" class="text-gray-500 hover:text-gray-800 focus:outline-none text-xl z-10" onclick="document.getElementById('menu-btn').click()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <!-- Center Logo -->
+                <a href="index.html" class="absolute inset-x-0 mx-auto text-center w-32 logo-text flex justify-center items-center">
+                    <img src="logo.webp" alt="Stackly Logo" class="h-8 w-auto inline brightness-0">
+                </a>
+                
+                <!-- Bell Icon -->
+                <button class="relative text-gray-400 hover:text-gray-600 transition-colors z-10">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+            </div>
+
+            <!-- Desktop Header (Visible only on desktop) -->
+            <div class="hidden lg:flex w-full items-center justify-between">
+                <div class="flex items-center">
+                    <button id="menu-btn" class="hidden text-gray-500 hover:text-gray-900 focus:outline-none mr-4 text-xl">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    
+                    <!-- Search Bar -->
+                    <form id="admin-search-form" class="hidden md:flex relative text-gray-400 focus-within:text-primary-600 w-64 lg:w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                        <input type="text" id="admin-search-input" placeholder="Search reservations, customers..." class="w-full bg-gray-100 border-transparent rounded-lg pl-10 pr-4 py-2 text-sm text-gray-900 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-all">
+                    </form>
+                </div>
+                
+                <div class="flex items-center space-x-5">
+                    <button class="relative text-gray-400 hover:text-gray-700 transition-colors">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">3</span>
+                    </button>
+                    
+                    <div class="h-8 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+                    
+                    <!-- Admin Profile -->
+                    <div class="flex items-center cursor-pointer relative" id="admin-profile-dropdown-btn">
+                        <div class="text-right mr-3 hidden sm:block">
+                            <p id="admin-profile-name" class="text-sm font-bold text-gray-900 leading-tight">Admin Manager</p>
+                            <p class="text-xs text-gray-500">System Admin</p>
+                        </div>
+                        <i class="fa-solid fa-circle-user text-3xl text-gray-500"></i>
+                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs ml-3 hidden md:block"></i>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="admin-profile-dropdown-menu" class="hidden absolute right-0 top-10 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="login.html" id="admin-logout-btn" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50 font-medium">
+                                <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="p-6 lg:p-8 flex-grow">
+            <!-- TAB: Overview -->
+            <div id="tab-overview" class="tab-pane block">
+                <!-- Page Title -->
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-gray-900">Overview</h2>
+                        <p class="text-sm text-gray-500">Welcome to the Stackly management portal.</p>
+                    </div>
+                    <div class="hidden sm:flex space-x-2">
+                        <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center">
+                            <i class="fa-regular fa-calendar mr-2"></i> Today, Oct 24
+                        </button>
+                        <button class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 flex items-center shadow-sm">
+                            <i class="fa-solid fa-plus mr-2"></i> New Booking
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Stat 1 -->
+                    <div class="admin-card p-6 flex flex-col relative">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                                <i class="fa-solid fa-book-open text-xl"></i>
+                            </div>
+                            <span class="text-green-500 text-sm font-bold flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> 12%</span>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1">42</h3>
+                            <p class="text-sm font-medium text-gray-500">Today's Reservations</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat 2 -->
+                    <div class="admin-card p-6 flex flex-col relative">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-green-50 text-green-600 rounded-lg">
+                                <i class="fa-solid fa-dollar-sign text-xl"></i>
+                            </div>
+                            <span class="text-green-500 text-sm font-bold flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> 8%</span>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1">$4,850</h3>
+                            <p class="text-sm font-medium text-gray-500">Revenue (Today)</p>
+                        </div>
+                    </div>
+
+                    <!-- Stat 3 -->
+                    <div class="admin-card p-6 flex flex-col relative">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+                                <i class="fa-solid fa-users text-xl"></i>
+                            </div>
+                            <span class="text-green-500 text-sm font-bold flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> 3%</span>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1">12,450</h3>
+                            <p class="text-sm font-medium text-gray-500">Total Customers</p>
+                        </div>
+                    </div>
+
+                    <!-- Stat 4 -->
+                    <div class="admin-card p-6 flex flex-col relative">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-orange-50 text-orange-600 rounded-lg">
+                                <i class="fa-solid fa-bell-concierge text-xl"></i>
+                            </div>
+                            <span class="text-gray-400 text-sm font-bold">Total active</span>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1">18</h3>
+                            <p class="text-sm font-medium text-gray-500">Currently Seated Tables</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Revenue Chart -->
+                    <div class="lg:col-span-2 admin-card flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-gray-900">Revenue & Orders Overview</h3>
+                            <select class="text-sm border-gray-300 rounded-md text-gray-600 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                                <option>This Week</option>
+                                <option>This Month</option>
+                                <option>This Year</option>
+                            </select>
+                        </div>
+                        <div class="p-5 flex-grow relative h-72 w-full">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Source Chart -->
+                    <div class="admin-card flex flex-col">
+                        <div class="p-5 border-b border-gray-100 bg-white">
+                            <h3 class="font-bold text-gray-900">Reservation Sources</h3>
+                        </div>
+                        <div class="p-5 flex-grow flex justify-center items-center relative h-72">
+                            <canvas id="sourceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Reservations Table -->
+                <div class="admin-card flex flex-col overflow-hidden mb-8">
+                    <div class="p-5 border-b border-gray-100 bg-white flex justify-between items-center">
+                        <h3 class="font-bold text-gray-900">Today's Upcoming Reservations</h3>
+                        <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800">Manage All</a>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider">
+                                    <th class="px-6 py-3 font-semibold">Time</th>
+                                    <th class="px-6 py-3 font-semibold">Customer</th>
+                                    <th class="px-6 py-3 font-semibold">Guests</th>
+                                    <th class="px-6 py-3 font-semibold">Status</th>
+                                    <th class="px-6 py-3 font-semibold">Special Requests</th>
+                                    <th class="px-6 py-3 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm bg-white text-gray-700">
+                                <!-- Row 1 -->
+                                <tr class="table-row">
+                                    <td class="px-6 py-4 font-bold text-gray-900">18:30</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs mr-3">AS</div>
+                                            <div>
+                                                <p class="font-bold text-gray-900">Alice Smith</p>
+                                                <p class="text-xs text-gray-500">+91 90909090 90</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4"><i class="fa-solid fa-user-group text-gray-400 mr-2"></i> 4</td>
+                                    <td class="px-6 py-4">
+                                        <span class="badge badge-confirmed">Confirmed</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-500 truncate max-w-[200px]">Window seat preferred</td>
+                                    <td class="px-6 py-4 text-right space-x-2">
+                                        <button class="px-3 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100 font-medium text-xs border border-green-200 transition-colors">Check-in</button>
+                                        <button class="text-gray-400 hover:text-gray-900 transition-colors"><i class="fa-solid fa-ellipsis-vertical px-2"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Reservations -->
+            <div id="tab-reservations" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-gray-900">Manage Reservations</h2>
+                    </div>
+                </div>
+                <!-- Section 1 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Pending Requests</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-2">
+                        <li class="flex justify-between"><span>Rahul M. - Table for 4</span> <span class="text-yellow-600 font-bold">Pending</span></li>
+                        <li class="flex justify-between"><span>Anita K. - Table for 2</span> <span class="text-yellow-600 font-bold">Pending</span></li>
+                        <li class="flex justify-between"><span>John D. - Event Space</span> <span class="text-yellow-600 font-bold">Pending</span></li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Pending</button>
+                </div>
+                <!-- Section 2 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Seating Chart</h3>
+                    <div class="mb-4 text-sm text-gray-600">
+                        <p>Total Capacity: 120 Guests</p>
+                        <p>Currently Occupied: 45 Guests (37%)</p>
+                        <p>Available Tables: 12</p>
+                    </div>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Edit Floorplan</button>
+                </div>
+                <!-- Section 3 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Waitlist</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-2">
+                        <li>1. Sarah Jenkins (Party of 2) - Waiting 15m</li>
+                        <li>2. Michael Ross (Party of 5) - Waiting 10m</li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Manage Waitlist</button>
+                </div>
+                <!-- Section 4 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Cancellation Log</h3>
+                    <p class="text-sm text-gray-600 mb-4">4 cancellations today. High volume due to weather conditions. Average cancellation notice: 2.5 hours.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Export Log</button>
+                </div>
+            </div>
+
+            <!-- TAB: Customers -->
+            <div id="tab-customers" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-gray-900">Customer Directory</h2>
+                    </div>
+                </div>
+                <!-- Section 1 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">VIP Members</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-2">
+                        <li><i class="fa-solid fa-star text-yellow-500 mr-2"></i>Dr. S. Kumar (50+ visits)</li>
+                        <li><i class="fa-solid fa-star text-yellow-500 mr-2"></i>Priya Rajan (Corporate)</li>
+                        <li><i class="fa-solid fa-star text-yellow-500 mr-2"></i>Karthik & Family (Gold Tier)</li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Email VIPs</button>
+                </div>
+                <!-- Section 2 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Recent Feedback</h3>
+                    <div class="mb-4 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                        <p class="font-bold text-gray-800">"Excellent ambiance and great pasta!"</p>
+                        <p class="italic">- Divya S. (Today at 1:30 PM)</p>
+                    </div>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Read Reviews</button>
+                </div>
+                <!-- Section 3 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Ban List</h3>
+                    <p class="text-sm text-gray-600 mb-4">2 active profiles on blocklist due to repetitive no-shows (more than 3 strikes). Automatically restricting new reservations.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Update List</button>
+                </div>
+                <!-- Section 4 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Demographics</h3>
+                    <p class="text-sm text-gray-600 mb-4">Top age group: 25-40 years. Most frequent visiting time: Weekends, 7 PM - 9 PM. Primary reservation channel: Direct Website.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Chart</button>
+                </div>
+            </div>
+
+            <!-- TAB: Settings -->
+            <div id="tab-settings" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-gray-900">System Settings</h2>
+                    </div>
+                </div>
+                <!-- Section 1 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">General Configuration</h3>
+                    <p class="text-sm text-gray-600 mb-4">Restaurant Name, Contact Email, Support Phone, and Locale options are currently set to English (IN) and IST timezone.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Edit Setup</button>
+                </div>
+                <!-- Section 2 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Staff Accounts</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-1">
+                        <li>1. Admin Manager (Full Access)</li>
+                        <li>2. Front Desk (View/Edit Reservations)</li>
+                        <li>3. Marketing (Offers & Content)</li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Manage Users</button>
+                </div>
+                <!-- Section 3 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Integrations</h3>
+                    <p class="text-sm text-gray-600 mb-4">Active API connections: Payment Gateway (Stripe), Email Server (SendGrid), and SMS Notifications (Twilio).</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">API Keys</button>
+                </div>
+                <!-- Section 4 -->
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Security</h3>
+                    <p class="text-sm text-gray-600 mb-4">Last login recorded from IP 192.168.1.1. Two-factor authentication (2FA) is currently disabled for staff accounts.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Logs</button>
+                </div>
+            </div>
+            
+            <!-- TAB: Menu -->
+            <div id="tab-menu" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6"><div><h2 class="text-2xl font-serif font-bold text-gray-900">Menu Management</h2></div></div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Current Menu Items</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-1">
+                        <li>- Truffle Mushroom Risotto ($24)</li>
+                        <li>- Pan-Seared Salmon ($28)</li>
+                        <li>- Classic Margherita Pizza ($18)</li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Edit Menu</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Seasonal Specials</h3>
+                    <p class="text-sm text-gray-600 mb-4">Currently running the "Autumn Harvest" special menu (Oct 1 - Nov 30). Features pumpkin bisque and roasted duck.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Add Special</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Pricing Adjustments</h3>
+                    <p class="text-sm text-gray-600 mb-4">Last global price update: 6 months ago. Seafood items are experiencing 12% higher supplier costs.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Update Prices</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Allergen Information</h3>
+                    <p class="text-sm text-gray-600 mb-4">14 items flagged containing gluten. 8 items flagged with nuts. Dairy-free alternative tags are up to date.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Review Allergens</button>
+                </div>
+            </div>
+
+            <!-- TAB: Blog -->
+            <div id="tab-blog" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6"><div><h2 class="text-2xl font-serif font-bold text-gray-900">Blog Management</h2></div></div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Published Posts</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-1">
+                        <li>"The Secret Behind Our Pasta" (2k views)</li>
+                        <li>"Meet the Chef: Antonio" (1.5k views)</li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Posts</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Drafts & Scheduled</h3>
+                    <p class="text-sm text-gray-600 mb-4">1 post scheduled for next Friday: "Upcoming Winter Menu Reveal". 2 drafts currently awaiting editor approval.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Write New Post</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Comments Moderation</h3>
+                    <p class="text-sm text-gray-600 mb-4"><span class="text-red-500 font-bold">3</span> new comments require approval. Automatic spam filter blocked 14 comments today.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Moderate</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">SEO Analytics</h3>
+                    <p class="text-sm text-gray-600 mb-4">Organic search traffic up 15% this month. Top keyword: "Best Italian near me".</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Stats</button>
+                </div>
+            </div>
+
+            <!-- TAB: Gallery -->
+            <div id="tab-gallery" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6"><div><h2 class="text-2xl font-serif font-bold text-gray-900">Gallery Management</h2></div></div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Featured Photos</h3>
+                    <p class="text-sm text-gray-600 mb-4">Hero carousel has 4 images active. Last updated 3 weeks ago. Recommended size: 1920x1080px.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Update Featured</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Food Photography</h3>
+                    <p class="text-sm text-gray-600 mb-4">Total catalog: 45 high-res images. Missing photos for 2 new seasonal menu items.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Upload Images</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Ambiance Gallery</h3>
+                    <p class="text-sm text-gray-600 mb-4">Interior and patio galleries updated. Virtual 360-tour integration is functioning normally.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Manage Albums</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">User Submitted</h3>
+                    <p class="text-sm text-gray-600 mb-4">12 new tagged photos pulled from Instagram API. Need manual approval to show on the community wall.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Review Submissions</button>
+                </div>
+            </div>
+
+            <!-- TAB: Offers -->
+            <div id="tab-offers" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6"><div><h2 class="text-2xl font-serif font-bold text-gray-900">Offers & Promotions</h2></div></div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Active Campaigns</h3>
+                    <ul class="text-sm text-gray-600 mb-4 space-y-1">
+                        <li>- "Weekend Brunch 20% Off" (Ends Sunday)</li>
+                        <li>- "Free Dessert for VIPs" (Ongoing)</li>
+                    </ul>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Campaigns</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Discount Codes</h3>
+                    <p class="text-sm text-gray-600 mb-4">Code 'WELCOME10' used 45 times this month. Code 'BDAYTREAT' used 12 times.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Generate Codes</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Loyalty Program</h3>
+                    <p class="text-sm text-gray-600 mb-4">1,420 enrolled members. 45 members crossed the Gold tier threshold this week.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Manage Tiers</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Promotion ROI</h3>
+                    <p class="text-sm text-gray-600 mb-4">Last email blast converted at 4.2%. Generated approximately $1,200 in tracked bookings.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Analyze Returns</button>
+                </div>
+            </div>
+
+            <!-- TAB: Reports -->
+            <div id="tab-reports" class="tab-pane hidden space-y-8">
+                <div class="flex justify-between items-end mb-6"><div><h2 class="text-2xl font-serif font-bold text-gray-900">Financial Reports</h2></div></div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Monthly Revenue</h3>
+                    <p class="text-sm text-gray-600 mb-4">Total net revenue for October: $42,500 (+4% from last month). Highest earning day: Oct 12.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Download PDF</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Staff Performance</h3>
+                    <p class="text-sm text-gray-600 mb-4">Top server this week: James (24 tables, average ticket $110). Average table turnaround time: 55 mins.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">View Metrics</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Inventory Costs</h3>
+                    <p class="text-sm text-gray-600 mb-4">Food cost is running at 28%. Liquor cost is running at 18%. Minimal spoilage reported this week.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Check Inventory</button>
+                </div>
+                <div class="admin-card p-6">
+                    <h3 class="font-bold mb-4 border-b pb-2">Tax Statements</h3>
+                    <p class="text-sm text-gray-600 mb-4">Q3 Tax data compiled and ready for review. $3,400 in deductible expenses logged.</p>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded">Export Data</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Sidebar Mobile Toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+
+        const toggleMenu = () => {
+            sidebar.classList.toggle('open');
+            if(sidebar.classList.contains('open')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+                document.body.style.overflow = '';
+            }
+        };
+
+        menuBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // Chart.js Implementations
+        try {
+            if (typeof Chart !== 'undefined') {
+                // Setup global defaults for charts to match brand
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.color = '#6b7280';
+                
+                // 1. Line Chart (Revenue)
+                const revCanvas = document.getElementById('revenueChart');
+                if (revCanvas) {
+                    const ctxRev = revCanvas.getContext('2d');
+                    let gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, 'rgba(140, 96, 82, 0.3)'); 
+                    gradient.addColorStop(1, 'rgba(140, 96, 82, 0)');
+                    
+                    new Chart(ctxRev, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            datasets: [{
+                                label: 'Revenue ($)',
+                                data: [2100, 2400, 2800, 3200, 4800, 5200, 3900],
+                                borderColor: '#8c6052',
+                                backgroundColor: gradient,
+                                borderWidth: 3,
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: '#8c6052',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1f2937',
+                                    padding: 12,
+                                    titleFont: { size: 13, weight: 'bold' },
+                                    bodyFont: { size: 14 },
+                                    callbacks: { label: function(context) { return ' $' + context.raw; } }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: { 
+                                    beginAtZero: true,
+                                    grid: { color: '#f3f4f6', drawBorder: false },
+                                    ticks: { callback: function(value) { return '$' + value; } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 2. Doughnut Chart (Sources)
+                const srcCanvas = document.getElementById('sourceChart');
+                if (srcCanvas) {
+                    const ctxSrc = srcCanvas.getContext('2d');
+                    new Chart(ctxSrc, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Direct Website', 'OpenTable', 'Phone', 'Walk-in'],
+                            datasets: [{
+                                data: [45, 25, 20, 10],
+                                backgroundColor: ['#8c6052', '#d2bab0', '#eaddd7', '#f2e8e5'],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '75%',
+                            plugins: {
+                                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } },
+                                tooltip: { backgroundColor: '#1f2937', padding: 12 }
+                            }
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Chart init error:', e);
+        }
+    
+        // Setup Dynamic Name
+        try {
+            const sessionData = localStorage.getItem('stackly_session');
+            const session = sessionData ? JSON.parse(sessionData) : {};
+            if (session.name) {
+                const nameEl = document.getElementById('admin-profile-name');
+                if (nameEl) nameEl.innerText = session.name;
+            }
+        } catch (e) {
+            console.error('Session parse error:', e);
+        }
+
+        // Search Bar Validation
+        const searchForm = document.getElementById('admin-search-form');
+        const searchInput = document.getElementById('admin-search-input');
+        if (searchForm) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!searchInput.value.trim()) {
+                    alert('Please enter the details');
+                } else {
+                    window.location.href = '404.html';
+                }
+            });
+        }
+
+        // Admin Profile Dropdown
+        const profileBtn = document.getElementById('admin-profile-dropdown-btn');
+        const profileMenu = document.getElementById('admin-profile-dropdown-menu');
+        if (profileBtn && profileMenu) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => {
+                if (!profileMenu.classList.contains('hidden')) {
+                    profileMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Tab Switching Logic
+        try {
+            const navItems = document.querySelectorAll('.nav-item');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const href = item.getAttribute('href');
+                    if (href === 'login.html' || href === 'index.html') return;
+                    e.preventDefault();
+                    
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    if (typeof toggleMenu === 'function' && window.innerWidth <= 1024) toggleMenu();
+                    
+                    tabPanes.forEach(tab => { tab.classList.remove('block'); tab.classList.add('hidden'); });
+                    
+                    let text = item.textContent || item.innerText || '';
+                    let lowerText = text.toLowerCase();
+                    let targetId = 'tab-overview'; // default
+                    
+                    if (lowerText.includes('overview')) targetId = 'tab-overview';
+                    else if (lowerText.includes('reservation')) targetId = 'tab-reservations';
+                    else if (lowerText.includes('customer')) targetId = 'tab-customers';
+                    else if (lowerText.includes('setting')) targetId = 'tab-settings';
+                    else if (lowerText.includes('menu')) targetId = 'tab-menu';
+                    else if (lowerText.includes('blog')) targetId = 'tab-blog';
+                    else if (lowerText.includes('gallery')) targetId = 'tab-gallery';
+                    else if (lowerText.includes('offer')) targetId = 'tab-offers';
+                    else if (lowerText.includes('report')) targetId = 'tab-reports';
+                    
+                    let targetEl = document.getElementById(targetId);
+                    if (targetEl) {
+                        targetEl.classList.remove('hidden');
+                        targetEl.classList.add('block');
+                    }
+                    
+                    // Trigger resize for ChartJS to render if clicking Overview
+                    if (targetId === 'tab-overview') {
+                        setTimeout(() => window.dispatchEvent(new Event('resize')), 10);
+                    }
+                });
+            });
+        } catch(e) { console.error(e); }
+
+        // Global Button / 404 Interceptor
+        try {
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('button') || e.target.closest('a');
+                
+                // Bell icon
+                if (e.target.closest('.fa-bell')) {
+                    e.preventDefault();
+                    window.location.href = '404.html';
+                    return;
+                }
+
+                if (btn) {
+                    const text = (btn.textContent || btn.innerText || '').toLowerCase();
+
+                    // Exclude structural elements and nav
+                    if (btn.id === 'admin-logout-btn' || btn.id === 'menu-btn' || btn.id === 'menu-btn-mobile' || 
+                        btn.id === 'admin-profile-dropdown-btn' || 
+                        btn.classList.contains('nav-item') || 
+                        btn.classList.contains('logo-text') ||
+                        btn.getAttribute('href') === 'index.html' ||
+                        text.includes('logout')) {
+                        return; 
+                    }
+
+                    // Any other button or link in the subpages should redirect to 404
+                    e.preventDefault();
+                    window.location.href = '404.html';
+                }
+            });
+        } catch(e) { console.error(e); }
+
+        // Logout Logic
+        document.querySelectorAll('a[href="login.html"], a[href="index.html"], #admin-logout-btn').forEach(btn => {
+            if(btn.innerText.includes('Logout') || btn.id === 'admin-logout-btn') {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('stackly_session');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | Stackly Premium Restaurant</title>
+    <meta name="description" content="Manage your upcoming restaurant reservations, view your favorite dishes, and access exclusive Stackly offers.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7', 400: '#d2bab0', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        
+        html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background-color: #f9fafb;  overflow-x: hidden;   max-width: 100%;}
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Dashboard Layout */
+        .sidebar { width: 280px; transition: transform 0.3s ease; }
+        .main-content { margin-left: 280px; transition: margin 0.3s ease; }
+        
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); z-index: 50; width: 100%; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+        
+        /* Cards & Tables */
+        .dash-card { background: white; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03); border: 1px solid #f3f4f6; }
+        .table-row { transition: background-color 0.2s; }
+        .table-row:hover { background-color: #fdf8f6; }
+        
+        /* Navigation */
+        .nav-item { display: flex; items-center: center; padding: 0.875rem 1.5rem; color: #4b5563; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .nav-item:hover { background-color: #fdf8f6; color: #8c6052; border-left-color: #eaddd7; }
+        .nav-item.active { background-color: #fdf8f6; color: #8c6052; border-left-color: #8c6052; }
+        .nav-icon { width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem; }
+        
+        /* Buttons */
+        .btn-primary { background-color: #8c6052; color: white; transition: background-color 0.3s; }
+        .btn-primary:hover { background-color: #6b473a; }
+        .btn-outline { border: 1px solid #e5e7eb; color: #374151; transition: all 0.2s; }
+        .btn-outline:hover { background-color: #f3f4f6; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+
+    <script>
+        const session = JSON.parse(localStorage.getItem('stackly_session'));
+        if (!session || session.role !== 'customer') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body class="text-gray-800 overflow-x-hidden">>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex flex-col justify-between">
+        <div class="flex-1 overflow-y-auto pb-6">
+            <!-- Logo -->
+            <div class="h-20 flex items-center px-8 border-b border-gray-100">
+                <a href="index.html" class="text-3xl font-serif font-bold text-gray-900"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="py-6 space-y-1">
+                <a href="#" class="nav-item active">
+                    <i class="fa-solid fa-border-all nav-icon"></i> Overview
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-calendar-check nav-icon"></i> My Reservations
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-heart nav-icon"></i> Favorite Dishes
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-tag nav-icon"></i> Special Offers
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-user-gear nav-icon"></i> Account Settings
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Bottom Section -->
+        <div class="p-6 border-t border-gray-100">
+            <a href="login.html" class="flex items-center text-red-600 hover:text-red-800 font-medium transition-colors px-2">
+                <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content overflow-x-hidden overflow-y-auto min-h-screen flex flex-col">
+        
+        <!-- Header -->
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center px-6 lg:px-10 sticky top-0 z-30">
+            <!-- Mobile Header (Visible only on mobile) -->
+            <div class="lg:hidden flex w-full justify-between items-center relative">
+                <!-- Hamburger -->
+                <button id="menu-btn-mobile" class="text-gray-500 hover:text-gray-800 focus:outline-none text-xl z-10" onclick="document.getElementById('menu-btn').click()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <!-- Center Logo -->
+                <a href="index.html" class="absolute inset-x-0 mx-auto text-center w-32 logo-text flex justify-center items-center">
+                    <img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain">
+                </a>
+                
+                <!-- Bell Icon -->
+                <button class="relative text-gray-400 hover:text-gray-600 transition-colors z-10">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+            </div>
+
+            <!-- Desktop Header (Visible only on desktop) -->
+            <div class="hidden lg:flex w-full items-center justify-between">
+                <div class="flex items-center">
+                    <button id="menu-btn" class="hidden nav-icon mr-4 text-gray-600 focus:outline-none">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button class="relative text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div class="relative">
+                        <div id="profile-dropdown-btn" class="flex items-center cursor-pointer">
+                            <i class="fa-solid fa-circle-user text-3xl text-gray-500"></i>
+                            <div class="ml-3 text-sm">
+                                <p id="profile-name" class="font-bold text-gray-900">User</p>
+                                <p class="text-gray-500 text-xs">Gold Member</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-gray-400 text-xs ml-3"></i>
+                        </div>
+                        <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="login.html" id="logout-btn" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50 font-medium">
+                                <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content Grid -->
+        <div class="p-6 lg:p-10 flex-grow">
+            <!-- Mobile Welcome Message (And desktop) -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-serif font-bold text-gray-900">Welcome Back, <span id="welcome-name">User</span></h2>
+            </div>
+            
+            <div id="tab-overview" class="tab-pane block">
+            
+            <!-- Row 1: Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Stat 1 -->
+                <div class="dash-card p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Total Visits</p>
+                        <h3 class="text-3xl font-bold text-gray-900">12</h3>
+                    </div>
+                    <div class="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 text-2xl">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                </div>
+                <!-- Stat 2 -->
+                <div class="dash-card p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Upcoming Bookings</p>
+                        <h3 class="text-3xl font-bold text-gray-900">1</h3>
+                    </div>
+                    <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-2xl">
+                        <i class="fa-regular fa-calendar-check"></i>
+                    </div>
+                </div>
+                <!-- Stat 3 -->
+                <div class="dash-card p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Reward Points</p>
+                        <h3 class="text-3xl font-bold text-gray-900">1,450</h3>
+                    </div>
+                    <div class="w-14 h-14 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600 text-2xl">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Upcoming Reservation & Offers -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                
+                <!-- Upcoming Reservation -->
+                <div class="lg:col-span-2 dash-card overflow-hidden flex flex-col md:flex-row">
+                    <div class="md:w-2/5 h-48 md:h-auto relative">
+                        <img loading="lazy" src="img/atmosphere2.webp" alt="Table" class="w-full h-full object-cover">
+                        <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Next Booking</div>
+                    </div>
+                    <div class="md:w-3/5 p-8 flex flex-col justify-center">
+                        <h3 class="text-2xl font-serif font-bold text-gray-900 mb-2">Dinner for 2</h3>
+                        <p class="text-primary-600 font-medium mb-6"><i class="fa-regular fa-clock mr-2"></i>Thursday, Oct 24 at 7:00 PM</p>
+                        
+                        <div class="flex space-x-3 mt-auto">
+                            <button class="btn-primary px-5 py-2.5 rounded-lg text-sm font-medium flex-1 text-center">Modify</button>
+                            <button class="btn-outline px-5 py-2.5 rounded-lg text-sm font-medium flex-1 text-center bg-white">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Special Offer -->
+                <div class="dash-card bg-primary-900 text-white p-8 relative overflow-hidden flex flex-col justify-center">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-primary-800 rounded-full opacity-50 blur-2xl"></div>
+                    <span class="inline-block bg-primary-800/80 text-primary-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 w-max border border-primary-700">Gold Member Perk</span>
+                    <h3 class="text-2xl font-serif font-bold mb-3">Complimentary Wine Pairing</h3>
+                    <p class="text-gray-300 text-sm mb-6 leading-relaxed">Enjoy a free sommelier-selected wine pairing with your next tasting menu reservation.</p>
+                    <button class="bg-white text-primary-900 hover:bg-gray-100 px-5 py-2.5 rounded-lg text-sm font-bold transition-colors w-full">Claim Offer</button>
+                </div>
+                
+            </div>
+
+            <!-- Row 3: History & Favorites -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Reservation History -->
+                <div class="lg:col-span-2 dash-card p-0 overflow-hidden flex flex-col">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
+                        <h3 class="text-xl font-serif font-bold text-gray-900">Reservation History</h3>
+                        <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800">View All</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/50 text-gray-500 text-xs uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-medium">Date & Time</th>
+                                    <th class="px-6 py-4 font-medium">Guests</th>
+                                    <th class="px-6 py-4 font-medium">Status</th>
+                                    <th class="px-6 py-4 font-medium text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100 bg-white">
+                                <tr class="table-row">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-gray-900">Sep 15, 2026</p>
+                                        <p class="text-gray-500">8:00 PM</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">4 People</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                            Completed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-primary-600 transition-colors" title="Leave Review"><i class="fa-regular fa-star text-lg"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-gray-900">Aug 02, 2026</p>
+                                        <p class="text-gray-500">7:30 PM</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">2 People</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                            Completed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-primary-600 transition-colors" title="Leave Review"><i class="fa-regular fa-star text-lg"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-gray-900">Jun 14, 2026</p>
+                                        <p class="text-gray-500">6:00 PM</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">6 People</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                            Cancelled
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-primary-600 transition-colors" title="Rebook"><i class="fa-solid fa-rotate-right text-lg"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Favorite Dishes -->
+                <div class="dash-card flex flex-col overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 bg-white">
+                        <h3 class="text-xl font-serif font-bold text-gray-900">Your Favorites</h3>
+                    </div>
+                    <div class="p-6 space-y-5 flex-grow bg-white">
+                        
+                        <!-- Dish 1 -->
+                        <div class="flex items-center group cursor-pointer">
+                            <img loading="lazy" src="img/Wagyu_Ribeye.webp" alt="Wagyu Ribeye" class="w-14 h-14 rounded-lg object-cover shadow-sm">
+                            <div class="ml-4 flex-grow">
+                                <h4 class="text-sm font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Wagyu Ribeye</h4>
+                                <p class="text-xs text-gray-500">Signature Main</p>
+                            </div>
+                            <div class="text-red-500 text-lg"><i class="fa-solid fa-heart"></i></div>
+                        </div>
+                        
+                        <!-- Dish 2 -->
+                        <div class="flex items-center group cursor-pointer">
+                            <img loading="lazy" src="img/menu_chocolate_tart.webp" alt="Chocolate Tart" class="w-14 h-14 rounded-lg object-cover shadow-sm">
+                            <div class="ml-4 flex-grow">
+                                <h4 class="text-sm font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Chocolate Tart</h4>
+                                <p class="text-xs text-gray-500">Dessert</p>
+                            </div>
+                            <div class="text-red-500 text-lg"><i class="fa-solid fa-heart"></i></div>
+                        </div>
+                        
+                        <!-- Dish 3 -->
+                        <div class="flex items-center group cursor-pointer">
+                            <img loading="lazy" src="img/menu_arancini.webp" alt="Truffle Arancini" class="w-14 h-14 rounded-lg object-cover shadow-sm">
+                            <div class="ml-4 flex-grow">
+                                <h4 class="text-sm font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Truffle Arancini</h4>
+                                <p class="text-xs text-gray-500">Starter</p>
+                            </div>
+                            <div class="text-red-500 text-lg"><i class="fa-solid fa-heart"></i></div>
+                        </div>
+                        
+                    </div>
+                    <div class="p-4 border-t border-gray-100 bg-gray-50 text-center">
+                        <a href="menu.html" class="text-sm font-medium text-primary-600 hover:text-primary-800">Browse Menu to Add More</a>
+                    </div>
+                </div>
+
+            </div>
+            
+            </div><!-- End tab-overview -->
+            
+            <!-- TAB: Reservations -->
+            <div id="tab-reservations" class="tab-pane hidden space-y-8">
+                <!-- Section 1: Upcoming -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Upcoming Reservations</h3>
+                    <div class="flex flex-col md:flex-row items-center border border-gray-100 rounded-xl overflow-hidden bg-gray-50">
+                        <div class="bg-primary-50 p-6 flex flex-col items-center justify-center min-w-[120px] border-b md:border-b-0 md:border-r border-gray-100">
+                            <span class="text-xs font-bold text-primary-600 uppercase">Oct</span>
+                            <span class="text-3xl font-bold text-gray-900">24</span>
+                        </div>
+                        <div class="p-6 flex-grow">
+                            <h4 class="text-lg font-bold text-gray-900 mb-1">Dinner for 2</h4>
+                            <p class="text-gray-500 text-sm"><i class="fa-regular fa-clock mr-2"></i>7:00 PM</p>
+                        </div>
+                        <div class="p-6">
+                            <button class="btn-outline px-4 py-2 rounded-lg text-sm font-medium bg-white">Modify</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Quick Book -->
+                <div class="dash-card p-6 md:p-8 bg-primary-900 text-white">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-4 md:mb-0">
+                            <h3 class="text-xl font-serif font-bold mb-2">Book Your Next Visit</h3>
+                            <p class="text-gray-300 text-sm">Secure a table for an upcoming special occasion.</p>
+                        </div>
+                        <a href="reservations.html" class="bg-white text-primary-900 hover:bg-gray-100 px-6 py-3 rounded-xl font-bold transition-colors">Find a Table</a>
+                    </div>
+                </div>
+
+                <!-- Section 3: Waitlist -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-4">Waitlist Status</h3>
+                    <div class="p-4 border border-yellow-100 bg-yellow-50 rounded-xl flex items-start">
+                        <i class="fa-solid fa-bell-concierge text-yellow-600 text-xl mt-1 mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-900">Friday Night Tasting Menu</h4>
+                            <p class="text-sm text-gray-600 mt-1">You are #3 on the waitlist for Oct 25th at 8:00 PM.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: History -->
+                <div class="dash-card p-0 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-xl font-serif font-bold text-gray-900">Past Reservations</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-500 text-sm">You have attended 12 reservations. Consistently arriving on time ensures priority seating!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TAB: Favorites -->
+            <div id="tab-favorites" class="tab-pane hidden space-y-8">
+                <!-- Section 1: Main Courses -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Favorite Mains</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center group cursor-pointer bg-gray-50 p-4 rounded-xl">
+                            <img loading="lazy" src="img/Wagyu_Ribeye.webp" alt="Wagyu Ribeye" class="w-16 h-16 rounded-lg object-cover shadow-sm">
+                            <div class="ml-4 flex-grow">
+                                <h4 class="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Wagyu Ribeye</h4>
+                                <p class="text-xs text-gray-500">Signature Main</p>
+                            </div>
+                            <div class="text-red-500 text-lg"><i class="fa-solid fa-heart"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Starters & Sides -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Favorite Starters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center group cursor-pointer bg-gray-50 p-4 rounded-xl">
+                            <img loading="lazy" src="img/menu_arancini.webp" alt="Truffle Arancini" class="w-16 h-16 rounded-lg object-cover shadow-sm">
+                            <div class="ml-4 flex-grow">
+                                <h4 class="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Truffle Arancini</h4>
+                                <p class="text-xs text-gray-500">Starter</p>
+                            </div>
+                            <div class="text-red-500 text-lg"><i class="fa-solid fa-heart"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Desserts -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Favorite Desserts</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center group cursor-pointer bg-gray-50 p-4 rounded-xl">
+                            <img loading="lazy" src="img/menu_chocolate_tart.webp" alt="Chocolate Tart" class="w-16 h-16 rounded-lg object-cover shadow-sm">
+                            <div class="ml-4 flex-grow">
+                                <h4 class="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Chocolate Tart</h4>
+                                <p class="text-xs text-gray-500">Dessert</p>
+                            </div>
+                            <div class="text-red-500 text-lg"><i class="fa-solid fa-heart"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Recommendations -->
+                <div class="dash-card p-6 md:p-8 bg-primary-50 border-primary-100">
+                    <h3 class="text-xl font-serif font-bold text-primary-900 mb-4">Chef's Recommendations</h3>
+                    <p class="text-sm text-primary-800 mb-4">Based on your love for Truffle Arancini and Wagyu Ribeye, Chef recommends trying our seasonal Truffle Gnocchi.</p>
+                    <a href="menu.html" class="text-sm font-bold text-primary-700 hover:text-primary-900 flex items-center">
+                        View Menu <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- TAB: Offers -->
+            <div id="tab-offers" class="tab-pane hidden space-y-8">
+                <!-- Section 1: Active Promotions -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Active Promotions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-gray-100 rounded-xl overflow-hidden shadow-sm flex flex-col">
+                            <div class="h-32 bg-primary-100 flex items-center justify-center text-primary-600">
+                                <i class="fa-solid fa-wine-glass text-4xl"></i>
+                            </div>
+                            <div class="p-6 bg-white flex-grow">
+                                <span class="text-xs font-bold text-primary-600 uppercase mb-2 block">Gold Perk</span>
+                                <h4 class="font-bold text-gray-900 mb-2">Complimentary Wine Pairing</h4>
+                                <p class="text-sm text-gray-500 mb-4">Enjoy a free sommelier-selected wine pairing with any tasting menu.</p>
+                                <button class="btn-primary w-full py-2 rounded-lg text-sm font-bold">Claim Offer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Loyalty Status -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-4">Loyalty Status</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-gray-900">Gold Member</span>
+                        <span class="text-sm font-bold text-primary-600">1,450 / 2,000 pts</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                        <div class="bg-primary-600 h-2.5 rounded-full" style="width: 72%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500">Earn 550 more points to reach Platinum Status and unlock priority booking.</p>
+                </div>
+
+                <!-- Section 3: Redeemed History -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-4">Redeemed Offers</h3>
+                    <ul class="divide-y divide-gray-100">
+                        <li class="py-3 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-gray-900 text-sm">Free Birthday Dessert</p>
+                                <p class="text-xs text-gray-500">Redeemed on Jun 14, 2026</p>
+                            </div>
+                            <span class="text-green-600"><i class="fa-solid fa-check"></i></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 4: Refer a Friend -->
+                <div class="dash-card p-6 md:p-8 bg-gray-900 text-white flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-xl font-serif font-bold mb-2">Refer a Friend</h3>
+                        <p class="text-gray-400 text-sm">Give $50, get $50 in dining credit when they book their first table.</p>
+                    </div>
+                    <button class="bg-white text-gray-900 hover:bg-gray-100 px-6 py-3 rounded-xl font-bold transition-colors whitespace-nowrap">Invite Friends</button>
+                </div>
+            </div>
+            
+            <!-- TAB: Settings -->
+            <div id="tab-settings" class="tab-pane hidden space-y-8">
+                <!-- Section 1: Profile Info -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Profile Information</h3>
+                    <form class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">First Name</label>
+                                <input type="text" value="User" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 outline-none focus:border-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
+                                <input type="text" value="Doe" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 outline-none focus:border-primary-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                            <input type="email" value="user@example.com" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 outline-none focus:border-primary-500">
+                        </div>
+                        <button type="button" class="btn-primary px-6 py-2 rounded-lg text-sm font-bold">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Section 2: Dietary Preferences -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Dietary Preferences</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span class="text-sm text-gray-700">Vegetarian</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span class="text-sm text-gray-700">Vegan</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span class="text-sm text-gray-700">Gluten-Free</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span class="text-sm text-gray-700">Nut Allergy</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Section 3: Notifications -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Notifications</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-900">Email Reminders</h4>
+                                <p class="text-sm text-gray-500">Receive an email 24 hours before your reservation.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-900">Special Offers</h4>
+                                <p class="text-sm text-gray-500">Receive emails about seasonal tasting menus and promotions.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Security -->
+                <div class="dash-card p-6 md:p-8">
+                    <h3 class="text-xl font-serif font-bold text-gray-900 mb-6">Security</h3>
+                    <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div class="mb-4 md:mb-0">
+                            <h4 class="font-bold text-gray-900">Password</h4>
+                            <p class="text-sm text-gray-500">Last changed 3 months ago</p>
+                        </div>
+                        <button class="btn-outline px-4 py-2 rounded-lg text-sm font-medium bg-white">Change Password</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <script>
+        // Sidebar Mobile Toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+
+        const toggleMenu = () => {
+            sidebar.classList.toggle('open');
+            if(sidebar.classList.contains('open')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+                document.body.style.overflow = '';
+            }
+        };
+
+        menuBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+        
+        // Handle Sidebar Navigation and Tab Switching Logic
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (item.getAttribute('href') === 'login.html') return;
+                e.preventDefault();
+                
+                // Remove active class from all
+                navItems.forEach(nav => nav.classList.remove('active'));
+                
+                // Add active class to clicked
+                item.classList.add('active');
+                
+                if (window.innerWidth <= 1024) {
+                    toggleMenu(); // Close menu on mobile after selection
+                }
+                
+                // Hide all tabs
+                tabPanes.forEach(tab => { tab.classList.remove('block'); tab.classList.add('hidden'); });
+                
+                // Find target tab
+                let text = item.innerText.trim().toLowerCase();
+                let targetId = 'tab-overview';
+                if (text.includes('reservation')) targetId = 'tab-reservations';
+                else if (text.includes('favorite')) targetId = 'tab-favorites';
+                else if (text.includes('offer')) targetId = 'tab-offers';
+                else if (text.includes('setting')) targetId = 'tab-settings';
+                
+                document.getElementById(targetId).classList.remove('hidden');
+                document.getElementById(targetId).classList.add('block');
+            });
+        });
+        
+        // Populate dynamic name
+        if (session && session.name) {
+            document.getElementById('welcome-name').innerText = session.name;
+            document.getElementById('profile-name').innerText = session.name;
+        }
+
+        // Profile Dropdown Toggle
+        const profileBtn = document.getElementById('profile-dropdown-btn');
+        const profileMenu = document.getElementById('profile-dropdown-menu');
+        
+        if (profileBtn && profileMenu) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+            
+            document.addEventListener('click', () => {
+                if (!profileMenu.classList.contains('hidden')) {
+                    profileMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Logout Logic
+        document.querySelectorAll('a[href="login.html"], a[href="index.html"], #logout-btn').forEach(btn => {
+            if(btn.innerText.includes('Logout') || btn.id === 'logout-btn') {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('stackly_session');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+        // Global Interactions & 404 Redirects
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('button') || e.target.closest('a');
+            
+            // Bell icon
+            if (e.target.closest('.fa-bell')) {
+                e.preventDefault();
+                window.location.href = '404.html';
+                return;
+            }
+
+            if (btn) {
+                const text = btn.innerText ? btn.innerText.trim() : '';
+
+                // Leave Review - Star turns gold
+                if (btn.title === 'Leave Review') {
+                    e.preventDefault();
+                    const starIcon = btn.querySelector('i');
+                    if (starIcon) {
+                        starIcon.classList.remove('fa-regular', 'text-gray-400');
+                        starIcon.classList.add('fa-solid', 'text-yellow-400');
+                    }
+                    return;
+                }
+
+                // Refresh - Rebook button
+                if (btn.title === 'Rebook' || btn.querySelector('.fa-rotate-right')) {
+                    e.preventDefault();
+                    window.location.reload();
+                    return;
+                }
+
+                // Settings Form Validation
+                if (text === 'Save Changes') {
+                    e.preventDefault();
+                    const form = btn.closest('form');
+                    if (form) {
+                        let isValid = true;
+                        const inputs = form.querySelectorAll('input[type="text"], input[type="email"]');
+                        inputs.forEach(input => {
+                            if (!input.value.trim() || !input.checkValidity()) {
+                                isValid = false;
+                                input.classList.add('border-red-500');
+                                input.classList.remove('border-gray-200');
+                            } else {
+                                input.classList.remove('border-red-500');
+                                input.classList.add('border-gray-200');
+                            }
+                        });
+                        
+                        if (isValid) {
+                            window.location.href = '404.html';
+                        }
+                    }
+                    return;
+                }
+
+                // Exclude structural elements and nav
+                if (btn.id === 'logout-btn' || btn.id === 'menu-btn' || btn.id === 'menu-btn-mobile' || btn.classList.contains('nav-item') || text.includes('Logout')) {
+                    return; 
+                }
+                
+                // Allow logo clicks to go to index.html
+                if (btn.classList.contains('logo-text') || btn.getAttribute('href') === 'index.html' || (btn.href && btn.href.endsWith('index.html'))) {
+                    return;
+                }
+
+                // Any other button or link in the subpages should redirect to 404
+                e.preventDefault();
+                window.location.href = '404.html';
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | Stackly Premium Restaurant</title>
+    <meta name="description" content="View our gallery featuring beautiful food photography, our elegant restaurant interior, and unforgettable dining experiences.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7', 400: '#d2bab0', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden;   overflow-x: hidden; max-width: 100%;}
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Navbar Transitions */
+        .nav-scrolled { background-color: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); py: 1rem !important; }
+        .nav-scrolled .nav-link { color: #4a5568 !important; }
+        .nav-scrolled .nav-link:hover { color: #8c6052 !important; }
+        .nav-scrolled .logo-text { color: #271712 !important; }
+        .nav-scrolled .mobile-btn { color: #271712 !important; }
+        
+        /* Mobile Menu */
+        .mobile-menu { transition: transform 0.4s ease-in-out; }
+        .mobile-menu-closed { transform: translateX(100%); }
+        
+        /* Custom Overlays */
+        .hero-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.85)); }
+        
+        /* Gallery Image Hover */
+        .gallery-item { cursor: pointer; border: 1px solid transparent; transition: border-color 0.4s ease; }
+        .gallery-item:hover { border-color: #eaddd7; }
+        .gallery-img { transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .gallery-item:hover .gallery-img { transform: scale(1.08); }
+        .gallery-overlay { opacity: 0; transition: opacity 0.4s ease; background: linear-gradient(to top, rgba(39, 23, 18, 0.9) 0%, rgba(39, 23, 18, 0.2) 100%); }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        .gallery-text { transform: translateY(20px); opacity: 0; transition: all 0.4s ease 0.1s; }
+        .gallery-item:hover .gallery-text { transform: translateY(0); opacity: 1; }
+        
+        /* Filter Active */
+        .filter-active { background-color: #8c6052 !important; color: white !important; border-color: #8c6052 !important; }
+        
+        /* Buttons */
+        .btn-primary { background-color: #8c6052; color: white; transition: background-color 0.3s, transform 0.2s; }
+        .btn-primary:hover { background-color: #6b473a; transform: translateY(-2px); }
+        
+        /* Lightbox Animations */
+        #lightbox { transition: opacity 0.3s ease; }
+        #lightbox-img { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: scale(0.9); }
+        #lightbox.active { opacity: 1; pointer-events: auto; }
+        #lightbox.active #lightbox-img { transform: scale(1); }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+<div id="page-wrapper" class="overflow-x-hidden w-full relative">
+
+    <!-- Navbar -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 bg-white shadow-md">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <!-- Left -->
+            <a href="index.html" class="text-3xl font-serif font-bold logo-text text-gray-900 transition-colors duration-300 lg:w-1/4"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+            
+            <!-- Center -->
+            <nav class="hidden lg:flex flex-1 justify-center space-x-8">
+                <a href="index.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Home</a>
+                <a href="about.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">About</a>
+                <a href="menu.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Menu</a>
+                <a href="gallery.html" class="nav-link text-primary-600 font-medium transition-colors border-b-2 border-primary-600">Gallery</a>
+                <a href="blog.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Blog</a>
+                <a href="contact.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Contact</a>
+            </nav>
+
+            <!-- Right -->
+            <div class="hidden lg:flex items-center justify-end space-x-6 lg:w-1/4">
+                <a id="nav-login-btn" href="login.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Login</a>
+                <a href="reservations.html" class="btn-primary px-7 py-2.5 rounded-full font-medium shadow-lg hover:shadow-xl">Book a Table</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button id="mobile-toggle" class="lg:hidden mobile-btn text-gray-900 text-2xl focus:outline-none transition-colors">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-gray-900/60 z-[60] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div id="mobile-menu-content" class="absolute top-0 right-0 w-full max-w-full h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <span><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></span>
+                <button id="mobile-close" class="text-2xl text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col p-6 space-y-5 text-lg overflow-y-auto pb-20">
+                <a href="index.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Home</a>
+                <a href="about.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">About</a>
+                <a href="menu.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Menu</a>
+                <a href="gallery.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Gallery</a>
+                <a href="blog.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Blog</a>
+                <a href="contact.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Contact</a>
+                <hr class="border-gray-100 my-2">
+                <a href="login.html" id="mobile-nav-login" class="mobile-nav-link font-medium text-gray-900 hover:text-primary-600 transition-colors"><i class="fa-solid fa-user mr-3 text-gray-400"></i>Login</a>
+                
+                <a href="reservations.html" class="mobile-nav-link btn-primary py-3 rounded-full font-medium text-center w-full shadow-md text-white mt-4">Book a Table</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="relative h-[45vh] min-h-[400px] flex items-center justify-center overflow-hidden">
+            <img src="img/atmosphere1.webp" alt="Gallery Hero" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 hero-overlay"></div>
+            <div class="container mx-auto px-6 relative z-10 text-center text-white mt-20">
+                <span class="block font-medium tracking-[0.2em] uppercase text-sm mb-4 text-primary-200" data-aos="fade-up">A Visual Journey</span>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-serif font-bold mb-6" data-aos="fade-up" data-aos-delay="100">Our Gallery</h1>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="py-24 bg-white">
+            <div class="container mx-auto px-6 max-w-7xl">
+                
+                <!-- Category Filters (Visual) -->
+                <div id="gallery-filters" class="flex flex-wrap justify-center gap-3 md:gap-4 mb-16" data-aos="fade-up">
+                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors filter-active">All</button>
+                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Food Photography</button>
+                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Interior</button>
+                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Chefs</button>
+                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Events & Dining</button>
+                </div>
+
+                
+                <!-- CSS Columns Masonry Layout -->
+                <div id="gallery-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                </div>
+
+                <div class="text-center mt-16" data-aos="fade-up">
+                    <a href="404.html" class="btn-primary px-10 py-4 rounded-full text-lg font-bold shadow-lg inline-flex items-center">
+                        <i class="fa-brands fa-instagram mr-3 text-xl"></i> Follow on Instagram
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Lightbox Overlay -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 opacity-0 pointer-events-none flex flex-col justify-center items-center backdrop-blur-sm">
+        <button id="close-lightbox" class="absolute top-6 right-8 text-white/70 hover:text-white text-4xl sm:text-5xl font-light transition-colors focus:outline-none">&times;</button>
+        <img loading="lazy" id="lightbox-img" src="" class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl">
+        <div id="lightbox-caption" class="text-white mt-6 text-xl font-serif tracking-wide"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-20 pb-10 mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-1">
+                    <h3 class="mb-6"><img src="logo.webp" alt="Stackly Logo" class="h-12 w-auto inline brightness-0 invert max-w-[180px] sm:max-w-[220px] object-contain"></h3>
+                    <p class="leading-relaxed mb-6 text-gray-400">A premium dining experience focused on seasonal ingredients and innovative culinary techniques in a modern, elegant setting.</p>
+                    <div class="flex space-x-4">
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Quick Link</h4>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="hover:text-primary-400 transition-colors">Home</a></li>
+                        <li><a href="about.html" class="hover:text-primary-400 transition-colors">About</a></li>
+                        <li><a href="menu.html" class="hover:text-primary-400 transition-colors">Menu</a></li>
+                        <li><a href="gallery.html" class="hover:text-primary-400 transition-colors">Gallery</a></li>
+                        <li><a href="blog.html" class="hover:text-primary-400 transition-colors">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-primary-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Information</h4>
+                    <ul class="space-y-3">
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Reservations</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Contact Us</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Customer Login</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Gift Cards</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Subscribe to receive updates, access to exclusive events, and seasonal menus.</p>
+                    <form class="flex" action="404.html" method="GET">
+                        <input type="email" required oninvalid="this.setCustomValidity('pls enter the mail id')" oninput="this.setCustomValidity('')" placeholder="Email address" class="bg-gray-800 text-white px-4 py-3 rounded-l-lg outline-none focus:ring-1 focus:ring-primary-500 w-full border border-gray-700">
+                        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-r-lg transition-colors font-medium">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2026 Stackly Restaurant. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="404.html" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="404.html" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS animations
+        AOS.init({ duration: 900, once: true, offset: 50, easing: 'ease-out-cubic' });
+        
+        // Mobile Menu
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        
+        const mobileMenuContent = document.getElementById('mobile-menu-content');
+        if(mobileToggle && mobileMenu && mobileMenuContent) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenuContent.classList.remove('translate-x-full');
+                    document.body.style.overflow = 'hidden';
+                }, 10);
+            });
+        }
+        
+        if(mobileClose && mobileMenu && mobileMenuContent) {
+            mobileClose.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenuContent.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        }
+
+        // Check session to update nav
+        document.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('stackly_session');
+            const loginBtn = document.getElementById('nav-login-btn');
+            const mobLoginBtn = document.getElementById('mobile-nav-login');
+            
+            if(session) {
+                const user = JSON.parse(session);
+                const dashLink = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+                if(loginBtn) { loginBtn.innerText = 'Dashboard'; loginBtn.href = dashLink; }
+                
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

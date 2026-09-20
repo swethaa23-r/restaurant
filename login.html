@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Stackly Premium Restaurant</title>
+    <meta name="description" content="Access your Stackly account to manage your reservations and view exclusive member offers.">
+    <script src="https://cdn.tailwindcss.com">
+        // Mobile Menu Logic
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuContent = document.getElementById('mobile-menu-content');
+        
+        if(mobileToggle && mobileMenu && mobileMenuContent) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenuContent.classList.remove('translate-x-full');
+                    document.body.style.overflow = 'hidden';
+                }, 10);
+            });
+        }
+        
+        if(mobileClose && mobileMenu && mobileMenuContent) {
+            mobileClose.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenuContent.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        }
+
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7', 400: '#d2bab0', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {  overflow-x: hidden;  max-width: 100%;}
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+            border-radius: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus { border-color: #8c6052; box-shadow: 0 0 0 2px rgba(140, 96, 82, 0.1); }
+        .form-input.input-error { border-color: #ef4444; }
+        
+        /* Buttons */
+        .btn-primary { background-color: #8c6052; color: white; transition: background-color 0.3s, transform 0.2s; }
+        .btn-primary:hover { background-color: #6b473a; transform: translateY(-2px); }
+        .btn-outline { border: 1px solid #e5e7eb; color: #4b5563; transition: all 0.3s; }
+        .btn-outline:hover { background-color: #f3f4f6; color: #111827; }
+        
+        /* Custom Select Arrow */
+        select { appearance: none; }
+        
+        /* Checkbox */
+        .custom-checkbox { accent-color: #8c6052; width: 1.125rem; height: 1.125rem; cursor: pointer; }
+    </style>
+</head>
+<body class="bg-white flex min-h-screen">
+<div id="page-wrapper" class="overflow-x-hidden w-full relative">
+
+    <!-- Left Side: Image / Branding -->
+    <div class="hidden lg:flex lg:w-1/2 relative bg-primary-900 flex-col justify-between p-12 overflow-hidden">
+        <img src="img/atmosphere.webp" alt="Restaurant Ambiance" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay">
+        
+        <div class="relative z-10">
+            <a href="index.html" class="text-3xl font-serif font-bold text-white tracking-wide"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+        </div>
+        
+        <div class="relative z-10 max-w-md">
+            <span class="uppercase tracking-widest text-xs font-bold text-primary-200 block mb-3">Welcome Back</span>
+            <h2 class="text-4xl font-serif font-bold text-white mb-6 leading-tight">Access Your Exclusive Dining Profile.</h2>
+            <p class="text-gray-300 text-sm leading-relaxed">Manage your upcoming reservations, view your dining history, and receive personalized seasonal recommendations from our executive chef.</p>
+        </div>
+        
+        <div class="relative z-10 flex space-x-2 text-primary-300 text-sm">
+            <span>&copy; 2026 Stackly Restaurant</span>
+        </div>
+    </div>
+
+    <!-- Right Side: Login Form -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-6 overflow-y-auto">
+        <div class="w-full max-w-md" data-aos="fade-up">
+            
+            <div class="text-center mb-4">
+                <a href="index.html" class="lg:hidden text-2xl font-serif font-bold text-gray-900 mb-2 block"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+                <h1 class="text-2xl font-serif font-bold text-gray-900 mb-1">Sign In</h1>
+                <p class="text-sm text-gray-500">Please enter your credentials to continue.</p>
+            </div>
+            
+            <form id="loginForm" novalidate class="space-y-4">
+                
+                <!-- Role Dropdown -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Login As</label>
+                    <div class="relative">
+                        <select id="role" required class="form-input cursor-pointer pr-10 font-medium py-2">
+                            <option value="user">Customer / User</option>
+                            <option value="admin">Restaurant Admin</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Email Address *</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <input type="email" id="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" placeholder="you@example.com" class="form-input pl-11 py-2">
+                    </div>
+                    <p class="text-red-500 text-xs mt-1 hidden" id="emailError">Please enter a valid email address.</p>
+                </div>
+                
+                <!-- Password -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Password *</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <input type="password" id="password" required placeholder="••••••••" class="form-input pl-11 pr-12 py-2">
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary-600 focus:outline-none transition-colors">
+                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                    <p class="text-red-500 text-xs mt-1 hidden" id="passwordError">Please enter your password.</p>
+                </div>
+                
+                <!-- Options Row -->
+                <div class="flex items-center justify-between pt-1 pb-1">
+                    <label class="flex items-center text-sm text-gray-600 cursor-pointer group">
+                        <input type="checkbox" class="custom-checkbox rounded border-gray-300 mr-2">
+                        <span class="group-hover:text-primary-600 transition-colors">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm font-bold text-primary-600 hover:text-primary-800 transition-colors">Forgot Password?</a>
+                </div>
+                
+                <!-- Actions -->
+                <div class="space-y-2 pt-1">
+                    <button type="submit" class="btn-primary w-full py-2.5 rounded-xl text-base font-bold shadow-md flex justify-center items-center gap-2">
+                        Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
+                    
+                    <a href="index.html" class="btn-outline w-full py-2.5 rounded-xl text-base font-bold flex justify-center items-center gap-2 block text-center">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Home
+                    </a>
+                </div>
+                
+            </form>
+            
+            <p class="mt-4 text-center text-sm text-gray-600">
+                Don't have an account yet? 
+                <a href="signup.html" class="font-bold text-primary-600 hover:text-primary-800 transition-colors underline underline-offset-2">Create Account</a>
+            </p>
+            
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // Show/Hide Password Toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', function (e) {
+            // Toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // Toggle the eye icon
+            if(type === 'text') {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Form Validation & Routing Logic
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const roleInput = document.getElementById('role');
+        
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let isValid = true;
+            
+            // Validate Email
+            if (!emailInput.value || !emailInput.checkValidity()) {
+                emailInput.classList.add('input-error');
+                emailError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('input-error');
+                emailError.classList.add('hidden');
+            }
+            
+            // Validate Password
+            if (!passwordInput.value.trim()) {
+                passwordInput.classList.add('input-error');
+                passwordError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                passwordInput.classList.remove('input-error');
+                passwordError.classList.add('hidden');
+            }
+            
+            // Route based on role if valid
+            if (isValid) {
+                // Simulate loading state on button
+                const btn = form.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
+                btn.disabled = true;
+                
+                // Set simulated session
+                const role = roleInput.value === 'admin' ? 'admin' : 'customer';
+                let name = emailInput.value.split('@')[0];
+                name = name.charAt(0).toUpperCase() + name.slice(1);
+                localStorage.setItem('stackly_session', JSON.stringify({ role: role, name: name }));
+                
+                setTimeout(() => {
+                    if(roleInput.value === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 800); // 800ms delay for visual feedback
+            }
+        });
+        
+        // Clear errors on input
+        emailInput.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('input-error');
+                emailError.classList.add('hidden');
+            }
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                this.classList.remove('input-error');
+                passwordError.classList.add('hidden');
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

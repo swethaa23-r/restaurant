@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog & Journal | Stackly Premium Restaurant</title>
+    <meta name="description" content="Read the latest news, chef stories, recipes, and dining experiences from the Stackly team.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7', 400: '#d2bab0', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden;   overflow-x: hidden; max-width: 100%;}
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Navbar Transitions */
+        .nav-scrolled { background-color: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); py: 1rem !important; }
+        .nav-scrolled .nav-link { color: #4a5568 !important; }
+        .nav-scrolled .nav-link:hover { color: #8c6052 !important; }
+        .nav-scrolled .logo-text { color: #271712 !important; }
+        .nav-scrolled .mobile-btn { color: #271712 !important; }
+        
+        /* Mobile Menu */
+        .mobile-menu { transition: transform 0.4s ease-in-out; }
+        .mobile-menu-closed { transform: translateX(100%); }
+        
+        /* Custom Overlays & Effects */
+        .hero-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.85)); }
+        
+        /* Blog Card Hover Effects */
+        .blog-card { transition: all 0.4s ease; border: 1px solid transparent; }
+        .blog-card:hover { border-color: #eaddd7; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .blog-card:hover .read-more-icon { transform: translateX(5px); }
+        .blog-img-wrap { overflow: hidden; }
+        .blog-card:hover .blog-img { transform: scale(1.08); }
+        .blog-img { transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        
+        /* Buttons */
+        .btn-primary { background-color: #8c6052; color: white; transition: background-color 0.3s, transform 0.2s; }
+        .btn-primary:hover { background-color: #6b473a; transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+<div id="page-wrapper" class="overflow-x-hidden w-full relative">
+
+    <!-- Navbar -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 bg-white shadow-md">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <!-- Left -->
+            <a href="index.html" class="text-3xl font-serif font-bold logo-text text-gray-900 transition-colors duration-300 lg:w-1/4"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+            
+            <!-- Center -->
+            <nav class="hidden lg:flex flex-1 justify-center space-x-8">
+                <a href="index.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Home</a>
+                <a href="about.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">About</a>
+                <a href="menu.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Menu</a>
+                <a href="gallery.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Gallery</a>
+                <a href="blog.html" class="nav-link text-primary-600 font-medium transition-colors border-b-2 border-primary-600">Blog</a>
+                <a href="contact.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Contact</a>
+            </nav>
+
+            <!-- Right -->
+            <div class="hidden lg:flex items-center justify-end space-x-6 lg:w-1/4">
+                <a id="nav-login-btn" href="login.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Login</a>
+                <a href="reservations.html" class="btn-primary px-7 py-2.5 rounded-full font-medium shadow-lg hover:shadow-xl">Book a Table</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button id="mobile-toggle" class="lg:hidden mobile-btn text-gray-900 text-2xl focus:outline-none transition-colors">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-gray-900/60 z-[60] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div id="mobile-menu-content" class="absolute top-0 right-0 w-full max-w-full h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <span><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></span>
+                <button id="mobile-close" class="text-2xl text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col p-6 space-y-5 text-lg overflow-y-auto pb-20">
+                <a href="index.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Home</a>
+                <a href="about.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">About</a>
+                <a href="menu.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Menu</a>
+                <a href="gallery.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Gallery</a>
+                <a href="blog.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Blog</a>
+                <a href="contact.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Contact</a>
+                <hr class="border-gray-100 my-2">
+                <a href="login.html" id="mobile-nav-login" class="mobile-nav-link font-medium text-gray-900 hover:text-primary-600 transition-colors"><i class="fa-solid fa-user mr-3 text-gray-400"></i>Login</a>
+                
+                <a href="reservations.html" class="mobile-nav-link btn-primary py-3 rounded-full font-medium text-center w-full shadow-md text-white mt-4">Book a Table</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden">
+            <img src="img/fine_dining.webp" alt="Journal Hero" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 hero-overlay"></div>
+            <div class="container mx-auto px-6 relative z-10 text-center text-white mt-20">
+                <span class="block font-medium tracking-[0.2em] uppercase text-sm mb-4 text-primary-200" data-aos="fade-up">Read Our Stories</span>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-serif font-bold mb-6" data-aos="fade-up" data-aos-delay="100">The Journal</h1>
+            </div>
+        </section>
+
+        <!-- Featured Article Section -->
+        <section class="py-24 bg-white border-b border-gray-200">
+            <div class="container mx-auto px-6 max-w-7xl">
+                <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+                    <div class="md:w-1/2 w-full blog-img-wrap rounded-3xl shadow-xl overflow-hidden group cursor-pointer" data-aos="fade-right">
+                        <img loading="lazy" src="img/First_Michelin_Star.webp" alt="Featured Post" class="w-full h-full object-cover h-48 blog-img">
+                    </div>
+                    <div class="md:w-1/2 w-full flex flex-col justify-center" data-aos="fade-left">
+                        <div class="flex items-center text-xs font-bold uppercase tracking-[0.15em] mb-4 space-x-3">
+                            <span class="bg-primary-50 text-primary-700 px-3 py-1 rounded-full">Chef Stories</span>
+                            <span class="text-gray-400">Oct 24, 2026</span>
+                        </div>
+                        <h2 class="text-4xl md:text-4xl sm:text-5xl font-serif font-bold text-gray-900 mb-6 leading-tight hover:text-primary-600 transition-colors cursor-pointer">The Evolution of Fine Dining: What's Next for Stackly?</h2>
+                        <p class="text-gray-600 mb-8 leading-relaxed text-lg">As we look towards the next decade, Executive Chef Marcus Chen unveils his bold vision for the future of our culinary experience, blending sustainability with avant-garde techniques...</p>
+                        <div>
+                            <a href="404.html" class="btn-primary px-8 py-3.5 rounded-full text-sm font-bold tracking-wide uppercase inline-flex items-center shadow-lg group">Read Full Article <i class="fa-solid fa-arrow-right ml-3 transform group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Grid Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6 max-w-7xl">
+                
+                
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    
+                    <!-- Post 1: Recipes -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm blog-card flex flex-col group cursor-pointer" data-aos="fade-up" data-aos-delay="100">
+                        <div class="h-64 blog-img-wrap relative">
+                            <img loading="lazy" src="img/handmade_pasta.webp" alt="Handmade Pasta Recipe" class="w-full h-full object-cover blog-img">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Recipes</div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <span class="text-xs font-medium text-gray-400 mb-3">OCT 12, 2026</span>
+                            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Mastering the Art of Handmade Pasta</h3>
+                            <p class="text-gray-500 line-clamp-3 text-sm leading-relaxed mb-6 flex-grow">Our head chef shares the secrets to creating the perfect pasta dough from scratch. Discover the right flour blends and techniques to achieve the perfect al dente bite.</p>
+                            <a href="404.html" class="inline-flex items-center text-primary-600 font-bold text-sm tracking-wide uppercase mt-auto">Read More <i class="fa-solid fa-arrow-right ml-2 read-more-icon transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Post 2: Food Experiences -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm blog-card flex flex-col group cursor-pointer" data-aos="fade-up" data-aos-delay="200">
+                        <div class="h-64 blog-img-wrap relative">
+                            <img loading="lazy" src="img/menu_wine_pairing.webp" alt="Wine Pairing Experience" class="w-full h-full object-cover blog-img">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Food Experiences</div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <span class="text-xs font-medium text-gray-400 mb-3">OCT 05, 2026</span>
+                            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Pairing Wine with Autumn Flavors</h3>
+                            <p class="text-gray-500 line-clamp-3 text-sm leading-relaxed mb-6 flex-grow">A deep dive with our Head Sommelier, Elena Rossi, into selecting the perfect Pinot Noirs and robust Chardonnays to complement roasted root vegetables and game meats.</p>
+                            <a href="404.html" class="inline-flex items-center text-primary-600 font-bold text-sm tracking-wide uppercase mt-auto">Read More <i class="fa-solid fa-arrow-right ml-2 read-more-icon transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Post 3: Restaurant News -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm blog-card flex flex-col group cursor-pointer" data-aos="fade-up" data-aos-delay="300">
+                        <div class="h-64 blog-img-wrap relative">
+                            <img loading="lazy" src="img/Autumn_Tasting_Menu.webp" alt="Michelin Star Dining" class="w-full h-full object-cover blog-img">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Restaurant News</div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <span class="text-xs font-medium text-gray-400 mb-3">SEP 28, 2026</span>
+                            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Stackly Retains 3 Michelin Stars</h3>
+                            <p class="text-gray-500 line-clamp-3 text-sm leading-relaxed mb-6 flex-grow">We are incredibly proud and humbled to announce that our team's relentless dedication has been recognized once again with three prestigious Michelin stars.</p>
+                            <a href="404.html" class="inline-flex items-center text-primary-600 font-bold text-sm tracking-wide uppercase mt-auto">Read More <i class="fa-solid fa-arrow-right ml-2 read-more-icon transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Post 4: Food Articles -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm blog-card flex flex-col group cursor-pointer" data-aos="fade-up" data-aos-delay="100">
+                        <div class="h-64 blog-img-wrap relative">
+                            <img loading="lazy" src="img/blog_farm.webp" alt="Farm to Table Ingredients" class="w-full h-full object-cover blog-img">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Food Articles</div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <span class="text-xs font-medium text-gray-400 mb-3">SEP 15, 2026</span>
+                            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">The Importance of Local Sourcing</h3>
+                            <p class="text-gray-500 line-clamp-3 text-sm leading-relaxed mb-6 flex-grow">Why farm-to-table isn't just a buzzword for us. Explore our partnerships with local farmers in upstate New York and how it elevates every dish.</p>
+                            <a href="404.html" class="inline-flex items-center text-primary-600 font-bold text-sm tracking-wide uppercase mt-auto">Read More <i class="fa-solid fa-arrow-right ml-2 read-more-icon transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Post 5: Chef Stories -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm blog-card flex flex-col group cursor-pointer" data-aos="fade-up" data-aos-delay="200">
+                        <div class="h-64 blog-img-wrap relative">
+                            <img loading="lazy" src="img/team_sous.webp" alt="Sous Chef Kenji" class="w-full h-full object-cover blog-img">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Chef Stories</div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <span class="text-xs font-medium text-gray-400 mb-3">SEP 02, 2026</span>
+                            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Behind the Line: A Day with Kenji</h3>
+                            <p class="text-gray-500 line-clamp-3 text-sm leading-relaxed mb-6 flex-grow">Follow our Executive Sous Chef, Kenji Sato, as he guides us through a typical 14-hour shift, from morning market runs to the intense evening dinner rush.</p>
+                            <a href="404.html" class="inline-flex items-center text-primary-600 font-bold text-sm tracking-wide uppercase mt-auto">Read More <i class="fa-solid fa-arrow-right ml-2 read-more-icon transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Post 6: Recipes -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm blog-card flex flex-col group cursor-pointer" data-aos="fade-up" data-aos-delay="300">
+                        <div class="h-64 blog-img-wrap relative">
+                            <img loading="lazy" src="img/menu_chocolate_tart.webp" alt="Valrhona Chocolate Tart" class="w-full h-full object-cover blog-img">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary-800 uppercase tracking-widest shadow-sm">Recipes</div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <span class="text-xs font-medium text-gray-400 mb-3">AUG 20, 2026</span>
+                            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">The Perfect Chocolate Tart</h3>
+                            <p class="text-gray-500 line-clamp-3 text-sm leading-relaxed mb-6 flex-grow">Head Pastry Chef David Dubois reveals the recipe for our famous Valrhona Chocolate Tart. A step-by-step guide to achieving the perfect glossy finish.</p>
+                            <a href="404.html" class="inline-flex items-center text-primary-600 font-bold text-sm tracking-wide uppercase mt-auto">Read More <i class="fa-solid fa-arrow-right ml-2 read-more-icon transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                
+                <!-- Pagination -->
+                <div class="flex justify-center mt-16" data-aos="fade-up">
+                    <nav id="blog-pagination" class="flex items-center space-x-2">
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-20 pb-10 mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-1">
+                    <h3 class="mb-6"><img src="logo.webp" alt="Stackly Logo" class="h-12 w-auto inline brightness-0 invert max-w-[180px] sm:max-w-[220px] object-contain"></h3>
+                    <p class="leading-relaxed mb-6 text-gray-400">A premium dining experience focused on seasonal ingredients and innovative culinary techniques in a modern, elegant setting.</p>
+                    <div class="flex space-x-4">
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Quick Link</h4>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="hover:text-primary-400 transition-colors">Home</a></li>
+                        <li><a href="about.html" class="hover:text-primary-400 transition-colors">About</a></li>
+                        <li><a href="menu.html" class="hover:text-primary-400 transition-colors">Menu</a></li>
+                        <li><a href="gallery.html" class="hover:text-primary-400 transition-colors">Gallery</a></li>
+                        <li><a href="blog.html" class="hover:text-primary-400 transition-colors">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-primary-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Information</h4>
+                    <ul class="space-y-3">
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Reservations</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Contact Us</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Customer Login</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Gift Cards</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Subscribe to receive updates, access to exclusive events, and seasonal menus.</p>
+                    <form class="flex" action="404.html" method="GET">
+                        <input type="email" required oninvalid="this.setCustomValidity('pls enter the mail id')" oninput="this.setCustomValidity('')" placeholder="Email address" class="bg-gray-800 text-white px-4 py-3 rounded-l-lg outline-none focus:ring-1 focus:ring-primary-500 w-full border border-gray-700">
+                        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-r-lg transition-colors font-medium">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2026 Stackly Restaurant. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="404.html" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="404.html" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS animations
+        AOS.init({ 
+            duration: 900, 
+            once: true, 
+            offset: 50,
+            easing: 'ease-out-cubic'
+        });
+        
+        // Solid White Navbar - Scroll Effect Removed
+
+        // Mobile Menu Functionality
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        
+        const mobileMenuContent = document.getElementById('mobile-menu-content');
+        if(mobileToggle && mobileMenu && mobileMenuContent) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenuContent.classList.remove('translate-x-full');
+                    document.body.style.overflow = 'hidden';
+                }, 10);
+            });
+        }
+        
+        if(mobileClose && mobileMenu && mobileMenuContent) {
+            mobileClose.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenuContent.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        }
+
+        // Check session to update nav
+        document.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('stackly_session');
+            const loginBtn = document.getElementById('nav-login-btn');
+            const mobLoginBtn = document.getElementById('mobile-nav-login');
+            
+            if(session) {
+                const user = JSON.parse(session);
+                const dashLink = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+                
+                if(loginBtn) {
+                    loginBtn.innerText = 'Dashboard';
+                    loginBtn.href = dashLink;
+                }
+                
+            }
+            
+            // Close mobile menu on link click
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(typeof closeMenu === 'function') closeMenu();
+                });
+            });
+        });
+    
+    </script>
+
+    <script>
+        (function() {
+            const cards = document.querySelectorAll('.blog-card');
+            const postsPerPage = 3;
+            const totalPages = Math.ceil(cards.length / postsPerPage);
+            let currentPage = 1;
+
+            function showPage(page) {
+                currentPage = page;
+                cards.forEach((card, idx) => {
+                    const start = (page - 1) * postsPerPage;
+                    const end = start + postsPerPage;
+                    card.style.display = (idx >= start && idx < end) ? '' : 'none';
+                });
+                renderPagination();
+                // Scroll to top of grid
+                const grid = cards[0]?.closest('section');
+                if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function renderPagination() {
+                const nav = document.getElementById('blog-pagination');
+                nav.innerHTML = '';
+                
+                // Prev
+                const prev = document.createElement('a');
+                prev.href = '#';
+                prev.className = 'w-10 h-10 flex items-center justify-center rounded-full ' + 
+                    (currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-200') + ' transition-colors';
+                prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+                prev.onclick = (e) => { e.preventDefault(); if (currentPage > 1) showPage(currentPage - 1); };
+                nav.appendChild(prev);
+                
+                // Pages
+                for (let i = 1; i <= totalPages; i++) {
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.className = 'w-10 h-10 flex items-center justify-center rounded-full font-medium transition-colors ' +
+                        (i === currentPage ? 'bg-primary-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
+                    a.textContent = i;
+                    a.onclick = (e) => { e.preventDefault(); showPage(i); };
+                    nav.appendChild(a);
+                }
+                
+                // Next
+                const next = document.createElement('a');
+                next.href = '#';
+                next.className = 'w-10 h-10 flex items-center justify-center rounded-full ' +
+                    (currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-200') + ' transition-colors';
+                next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                next.onclick = (e) => { e.preventDefault(); if (currentPage < totalPages) showPage(currentPage + 1); };
+                nav.appendChild(next);
+            }
+
+            showPage(1);
+        })();
+    </script>
+</div>
+</body>
+</html>

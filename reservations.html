@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservations | Stackly Premium Restaurant</title>
+    <meta name="description" content="Book a table at Stackly. Reserve your upcoming fine dining experience with our easy online booking system.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7', 400: '#d2bab0', 500: '#a37a6b', 600: '#8c6052', 700: '#6b473a', 800: '#4a2f26', 900: '#271712' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden;   overflow-x: hidden; max-width: 100%;}
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Navbar Transitions */
+        .nav-scrolled { background-color: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); py: 1rem !important; }
+        .nav-scrolled .nav-link { color: #4a5568 !important; }
+        .nav-scrolled .nav-link:hover { color: #8c6052 !important; }
+        .nav-scrolled .logo-text { color: #271712 !important; }
+        .nav-scrolled .mobile-btn { color: #271712 !important; }
+        
+        /* Mobile Menu */
+        .mobile-menu { transition: transform 0.4s ease-in-out; }
+        .mobile-menu-closed { transform: translateX(100%); }
+        
+        /* Form Field Styles */
+        .form-input {
+            width: 100%;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+            border-radius: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus { border-color: #8c6052; box-shadow: 0 0 0 2px rgba(140, 96, 82, 0.1); }
+        .form-input:invalid:not(:placeholder-shown) { border-color: #ef4444; }
+        
+        /* Time Slot Buttons */
+        .time-slot {
+            border: 1px solid #e5e7eb;
+            background-color: white;
+            color: #4b5563;
+            border-radius: 0.5rem;
+            padding: 0.75rem 0;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .time-slot:hover { border-color: #8c6052; color: #8c6052; }
+        .time-slot.selected { background-color: #8c6052; border-color: #8c6052; color: white; }
+        
+        /* Date Picker Customization */
+        ::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: 0.2s; }
+        ::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+        
+        /* Buttons */
+        .btn-primary { background-color: #8c6052; color: white; transition: background-color 0.3s, transform 0.2s; }
+        .btn-primary:hover { background-color: #6b473a; transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+<div id="page-wrapper" class="overflow-x-hidden w-full relative">
+
+    <!-- Navbar -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 bg-white shadow-md">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <!-- Left -->
+            <a href="index.html" class="text-3xl font-serif font-bold logo-text text-gray-900 transition-colors duration-300 lg:w-1/4"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+            
+            <!-- Center -->
+            <nav class="hidden lg:flex flex-1 justify-center space-x-8">
+                <a href="index.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Home</a>
+                <a href="about.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">About</a>
+                <a href="menu.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Menu</a>
+                <a href="gallery.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Gallery</a>
+                <a href="blog.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Blog</a>
+                <a href="contact.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Contact</a>
+            </nav>
+
+            <!-- Right -->
+            <div class="hidden lg:flex items-center justify-end space-x-6 lg:w-1/4">
+                <a id="nav-login-btn" href="login.html" class="nav-link text-gray-900 font-medium hover:text-primary-700 transition-colors">Login</a>
+                <a href="reservations.html" class="btn-primary px-7 py-2.5 rounded-full font-medium shadow-lg hover:shadow-xl">Book a Table</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button id="mobile-toggle" class="lg:hidden mobile-btn text-gray-900 text-2xl focus:outline-none transition-colors">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-gray-900/60 z-[60] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div id="mobile-menu-content" class="absolute top-0 right-0 w-full max-w-full h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <span><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></span>
+                <button id="mobile-close" class="text-2xl text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col p-6 space-y-5 text-lg overflow-y-auto pb-20">
+                <a href="index.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Home</a>
+                <a href="about.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">About</a>
+                <a href="menu.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Menu</a>
+                <a href="gallery.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Gallery</a>
+                <a href="blog.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Blog</a>
+                <a href="contact.html" class="mobile-nav-link font-medium text-gray-600 hover:text-primary-600 transition-colors">Contact</a>
+                <hr class="border-gray-100 my-2">
+                <a href="login.html" id="mobile-nav-login" class="mobile-nav-link font-medium text-gray-900 hover:text-primary-600 transition-colors"><i class="fa-solid fa-user mr-3 text-gray-400"></i>Login</a>
+                
+                <a href="reservations.html" class="mobile-nav-link btn-primary py-3 rounded-full font-medium text-center w-full shadow-md text-white mt-4">Book a Table</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-32 pb-24 bg-gray-50 flex items-center justify-center">
+        
+        <div class="container mx-auto px-6 max-w-6xl">
+            
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
+                
+                <!-- Left: Visual Side -->
+                <div class="lg:w-2/5 relative hidden md:block">
+                    <img src="img/atmosphere2.webp" alt="Restaurant Table Setting" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary-900/60"></div>
+                    <div class="relative z-10 h-full flex flex-col justify-between p-12 text-white">
+                        <div>
+                            <span class="uppercase tracking-widest text-xs font-bold text-primary-200 block mb-3">Reserve Your Experience</span>
+                            <h2 class="text-4xl font-serif font-bold mb-6 leading-tight">An Unforgettable Evening Awaits.</h2>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
+                            <h4 class="font-serif font-bold text-xl mb-2">Need a larger table?</h4>
+                            <p class="text-sm text-gray-200 mb-4">For parties larger than 8, private dining, or special events, please contact our events team directly.</p>
+                            <a href="contact.html" class="text-primary-200 hover:text-white font-bold text-sm tracking-wide uppercase flex items-center group transition-colors">
+                                Contact Events <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Form Side -->
+                <div class="lg:w-3/5 p-10 md:p-16 relative" id="form-container">
+                    
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-serif font-bold text-gray-900 mb-2">Book a Table</h1>
+                        <p class="text-gray-500">Please select your preferred date, time, and party size.</p>
+                    </div>
+
+                    <form id="reservationForm" novalidate>
+                        
+                        <!-- Row 1: Date & Guests -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Date *</label>
+                                <div class="relative">
+                                    <input type="date" id="resDate" required class="form-input">
+                                    <p class="text-red-500 text-xs mt-1 hidden" id="dateError">Please select a valid future date.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Guests *</label>
+                                <select id="resGuests" required class="form-input appearance-none bg-white">
+                                    <option value="" disabled selected>Select party size</option>
+                                    <option value="1">1 Person</option>
+                                    <option value="2">2 People</option>
+                                    <option value="3">3 People</option>
+                                    <option value="4">4 People</option>
+                                    <option value="5">5 People</option>
+                                    <option value="6">6 People</option>
+                                    <option value="7">7 People</option>
+                                    <option value="8">8 People</option>
+                                </select>
+                                <!-- Custom dropdown arrow -->
+                                <div class="pointer-events-none absolute inset-y-0 right-0 top-7 flex items-center px-4 text-gray-500">
+                                    <i class="fa-solid fa-chevron-down text-sm"></i>
+                                </div>
+                                <p class="text-red-500 text-xs mt-1 hidden" id="guestsError">Please select party size.</p>
+                            </div>
+                        </div>
+
+                        <!-- Time Slots UI -->
+                        <div class="mb-8">
+                            <label class="block text-sm font-bold text-gray-700 mb-3 flex justify-between items-end">
+                                <span>Time *</span>
+                                <span class="text-xs font-normal text-gray-400" id="time-feedback">Dinner service: 17:00 - 22:30</span>
+                            </label>
+                            
+                            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="timeSlotsContainer">
+                                <button type="button" class="time-slot" data-time="17:00">5:00 PM</button>
+                                <button type="button" class="time-slot" data-time="17:30">5:30 PM</button>
+                                <button type="button" class="time-slot" data-time="18:00">6:00 PM</button>
+                                <button type="button" class="time-slot" data-time="18:30">6:30 PM</button>
+                                <button type="button" class="time-slot" data-time="19:00">7:00 PM</button>
+                                <button type="button" class="time-slot" data-time="19:30">7:30 PM</button>
+                                <button type="button" class="time-slot" data-time="20:00">8:00 PM</button>
+                                <button type="button" class="time-slot" data-time="20:30">8:30 PM</button>
+                                <button type="button" class="time-slot" data-time="21:00">9:00 PM</button>
+                                <button type="button" class="time-slot" data-time="21:30">9:30 PM</button>
+                                <button type="button" class="time-slot" data-time="22:00">10:00 PM</button>
+                            </div>
+                            
+                            <!-- Hidden input to store selected time for validation -->
+                            <input type="hidden" id="resTime" required>
+                            <p class="text-red-500 text-xs mt-2 hidden" id="timeError">Please select a time slot.</p>
+                        </div>
+
+                        <hr class="border-gray-100 my-8">
+
+                        <!-- Personal Details -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
+                                <input type="text" id="resName" required placeholder="John Doe" class="form-input">
+                                <p class="text-red-500 text-xs mt-1 hidden" id="nameError">Please enter your name.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" id="resPhone" required placeholder="+1 (555) 000-0000" class="form-input">
+                                <p class="text-red-500 text-xs mt-1 hidden" id="phoneError">Please enter a valid phone number.</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" id="resEmail" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" placeholder="john@example.com" class="form-input">
+                            <p class="text-red-500 text-xs mt-1 hidden" id="emailError">Please enter a valid email address.</p>
+                        </div>
+
+                        <div class="mb-8">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Special Request (Subject) *</label>
+                            <div class="relative">
+                                <select id="resNotes" required class="form-input appearance-none bg-white">
+                                    <option value="" disabled selected>Select an occasion</option>
+                                    <option value="None">Regular Dining</option>
+                                    <option value="Birthday">Birthday Celebration</option>
+                                    <option value="Anniversary">Anniversary</option>
+                                    <option value="Candlelight Dinner">Candlelight Dinner</option>
+                                    <option value="Business Meeting">Business Meeting</option>
+                                    <option value="Proposal">Proposal / Romantic</option>
+                                    <option value="Family Gathering">Family Gathering</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fa-solid fa-chevron-down text-sm"></i>
+                                </div>
+                            </div>
+                            <p class="text-red-500 text-xs mt-1 hidden" id="notesError">Please select a special request subject.</p>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full py-4 rounded-xl text-lg font-bold shadow-lg flex justify-center items-center gap-2 group">
+                            Confirm Reservation <i class="fa-solid fa-check transition-transform group-hover:scale-125"></i>
+                        </button>
+                        
+                    </form>
+                    
+                </div>
+                
+                <!-- Success/Confirmation State (Hidden by default) -->
+                <div class="lg:w-3/5 p-10 md:p-16 relative hidden flex-col justify-center items-center text-center bg-white" id="success-container">
+                    <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-8">
+                        <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-gray-900 mb-4">Reservation Confirmed!</h2>
+                    <p class="text-gray-600 mb-8 text-lg" id="confirmation-text">Thank you, John. Your table for 2 on Oct 24 at 7:00 PM has been successfully booked.</p>
+                    
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 w-full mb-8 text-left">
+                        <h4 class="font-bold text-gray-900 mb-4 uppercase tracking-wider text-xs">Reservation Details</h4>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div><span class="text-gray-500 block mb-1">Name</span><span class="font-medium text-gray-900" id="confName">-</span></div>
+                            <div><span class="text-gray-500 block mb-1">Guests</span><span class="font-medium text-gray-900" id="confGuests">-</span></div>
+                            <div><span class="text-gray-500 block mb-1">Date</span><span class="font-medium text-gray-900" id="confDate">-</span></div>
+                            <div><span class="text-gray-500 block mb-1">Time</span><span class="font-medium text-gray-900" id="confTime">-</span></div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-500 mb-8">We have sent a confirmation email with these details. If you need to modify your booking, please check your email.</p>
+                    
+                    <button onclick="window.location.reload()" class="btn-primary px-8 py-3 rounded-full font-bold">Book Another Table</button>
+                </div>
+
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-20 pb-10 mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-1">
+                    <h3 class="mb-6"><img src="logo.webp" alt="Stackly Logo" class="h-12 w-auto inline brightness-0 invert max-w-[180px] sm:max-w-[220px] object-contain"></h3>
+                    <p class="leading-relaxed mb-6 text-gray-400">A premium dining experience focused on seasonal ingredients and innovative culinary techniques in a modern, elegant setting.</p>
+                    <div class="flex space-x-4">
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="404.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors duration-300"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Quick Link</h4>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="hover:text-primary-400 transition-colors">Home</a></li>
+                        <li><a href="about.html" class="hover:text-primary-400 transition-colors">About</a></li>
+                        <li><a href="menu.html" class="hover:text-primary-400 transition-colors">Menu</a></li>
+                        <li><a href="gallery.html" class="hover:text-primary-400 transition-colors">Gallery</a></li>
+                        <li><a href="blog.html" class="hover:text-primary-400 transition-colors">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-primary-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Information</h4>
+                    <ul class="space-y-3">
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Reservations</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Contact Us</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Customer Login</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Gift Cards</a></li>
+                        <li><a href="404.html" class="hover:text-primary-400 transition-colors">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-serif text-white font-bold mb-6">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Subscribe to receive updates, access to exclusive events, and seasonal menus.</p>
+                    <form class="flex" action="404.html" method="GET">
+                        <input type="email" required oninvalid="this.setCustomValidity('pls enter the mail id')" oninput="this.setCustomValidity('')" placeholder="Email address" class="bg-gray-800 text-white px-4 py-3 rounded-l-lg outline-none focus:ring-1 focus:ring-primary-500 w-full border border-gray-700">
+                        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-r-lg transition-colors font-medium">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2026 Stackly Restaurant. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="404.html" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="404.html" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Time Slot UI Logic
+        const timeSlots = document.querySelectorAll('.time-slot');
+        const timeInput = document.getElementById('resTime');
+        const timeError = document.getElementById('timeError');
+        const dateInput = document.getElementById('resDate');
+        let selectedTimeLabel = '';
+        
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        timeSlots.forEach(slot => {
+            // reset styles in case they were cached
+            slot.style.opacity = '1';
+            slot.style.cursor = 'pointer';
+            
+            slot.addEventListener('click', () => {
+                // Remove selected from all
+                timeSlots.forEach(s => s.classList.remove('selected'));
+                // Add selected to clicked
+                slot.classList.add('selected');
+                // Store value
+                timeInput.value = slot.dataset.time;
+                selectedTimeLabel = slot.innerText;
+                // Clear error if exists
+                timeError.classList.add('hidden');
+            });
+        });
+
+        // Form Validation & Submission Logic
+        const form = document.getElementById('reservationForm');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            let isValid = true;
+            
+            const fields = [
+                { id: 'resDate', errorId: 'dateError' },
+                { id: 'resGuests', errorId: 'guestsError' },
+                { id: 'resName', errorId: 'nameError' },
+                { id: 'resPhone', errorId: 'phoneError' },
+                { id: 'resEmail', errorId: 'emailError' },
+                { id: 'resNotes', errorId: 'notesError' }
+            ];
+
+            // Validate standard inputs
+            fields.forEach(field => {
+                const el = document.getElementById(field.id);
+                const err = document.getElementById(field.errorId);
+                
+                if (!el.checkValidity()) {
+                    el.classList.add('border-red-500');
+                    err.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    el.classList.remove('border-red-500');
+                    err.classList.add('hidden');
+                }
+            });
+
+            // Validate time slot separately (hidden input)
+            if (!timeInput.value) {
+                timeError.classList.remove('hidden');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                alert('Please enter the details');
+            } else {
+                // Gather data for confirmation
+                const dateVal = document.getElementById('resDate').value;
+                const guestsVal = document.getElementById('resGuests').options[document.getElementById('resGuests').selectedIndex].text;
+                const nameVal = document.getElementById('resName').value;
+                
+                // Format Date nicely
+                const dateObj = new Date(dateVal);
+                const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                
+                // Update Confirmation UI
+                document.getElementById('confirmation-text').innerText = `Thank you, ${nameVal}. Your seat has been booked for ${formattedDate} at ${selectedTimeLabel}.`;
+                
+                // Update the heading
+                const successHeading = document.querySelector('#success-container h2');
+                if (successHeading) {
+                    successHeading.innerText = 'Your seat has been booked';
+                }
+
+                document.getElementById('confName').innerText = nameVal;
+                document.getElementById('confGuests').innerText = guestsVal;
+                document.getElementById('confDate').innerText = formattedDate;
+                document.getElementById('confTime').innerText = selectedTimeLabel;
+                
+                // Swap Containers
+                document.getElementById('form-container').classList.add('hidden');
+                document.getElementById('success-container').classList.remove('hidden');
+                document.getElementById('success-container').classList.add('flex');
+            }
+        });
+
+        // Clear red borders on input
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', () => {
+                if(input.checkValidity()) {
+                    input.classList.remove('border-red-500');
+                    const err = document.getElementById(input.id.replace('res', '').toLowerCase() + 'Error');
+                    if(err) err.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Mobile menu
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        
+        const mobileMenuContent = document.getElementById('mobile-menu-content');
+        if(mobileToggle && mobileMenu && mobileMenuContent) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenuContent.classList.remove('translate-x-full');
+                    document.body.style.overflow = 'hidden';
+                }, 10);
+            });
+        }
+        
+        if(mobileClose && mobileMenu && mobileMenuContent) {
+            mobileClose.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenuContent.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        }
+
+        // Check session to update nav
+        document.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('stackly_session');
+            const loginBtn = document.getElementById('nav-login-btn');
+            const mobLoginBtn = document.getElementById('mobile-nav-login');
+            
+            if(session) {
+                const user = JSON.parse(session);
+                const dashLink = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+                
+                if(loginBtn) {
+                    loginBtn.innerText = 'Dashboard';
+                    loginBtn.href = dashLink;
+                }
+                
+            }
+            
+            // Close mobile menu on link click
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(typeof closeMenu === 'function') closeMenu();
+                });
+            });
+        });
+    
+    </script>
+</div>
+</body>
+</html>
