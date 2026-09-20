@@ -134,17 +134,122 @@
                 
                 <!-- Category Filters (Visual) -->
                 <div id="gallery-filters" class="flex flex-wrap justify-center gap-3 md:gap-4 mb-16" data-aos="fade-up">
-                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors filter-active">All</button>
-                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Food Photography</button>
-                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Interior</button>
-                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Chefs</button>
-                    <button class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Events & Dining</button>
-                </div>
+    <button data-filter="all" class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors filter-active bg-primary-600 text-white border-primary-600">All</button>
+    <button data-filter="food" class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Food Photography</button>
+    <button data-filter="interior" class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Interior</button>
+    <button data-filter="chefs" class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Chefs</button>
+    <button data-filter="events" class="px-6 py-2.5 rounded-full font-medium border border-gray-200 text-sm md:text-base transition-colors bg-white text-gray-600 hover:bg-gray-100">Events & Dining</button>
+</div>
 
                 
                 <!-- CSS Columns Masonry Layout -->
-                <div id="gallery-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-                </div>
+                <div id="gallery-grid" class="grid grid-cols-2 gap-2 md:gap-4 w-full">
+
+    <!-- Food Photography -->
+    <div class="gallery-item food w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/menu_arancini.webp" alt="Food" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Truffle Arancini</span>
+        </div>
+    </div>
+    <div class="gallery-item food w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/menu_salmon.webp" alt="Food" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Glazed Salmon</span>
+        </div>
+    </div>
+    <div class="gallery-item food w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/Wagyu_Ribeye.webp" alt="Food" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Wagyu Ribeye</span>
+        </div>
+    </div>
+    <div class="gallery-item food w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/menu_burrata.webp" alt="Food" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Fresh Burrata</span>
+        </div>
+    </div>
+
+    <!-- Interior -->
+    <div class="gallery-item interior w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/atmosphere1.webp" alt="Interior" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Dining Room</span>
+        </div>
+    </div>
+    <div class="gallery-item interior w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/atmosphere2.webp" alt="Interior" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Candlelight</span>
+        </div>
+    </div>
+    <div class="gallery-item interior w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/atmosphere3.webp" alt="Interior" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">The Bar Lounge</span>
+        </div>
+    </div>
+    <div class="gallery-item interior w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/atmosphere4.webp" alt="Interior" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">The Patio</span>
+        </div>
+    </div>
+
+    <!-- Chefs -->
+    <div class="gallery-item chefs w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/chef_marcus.webp" alt="Chefs" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Executive Chef</span>
+        </div>
+    </div>
+    <div class="gallery-item chefs w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/team_pastry.webp" alt="Chefs" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Pastry Chef</span>
+        </div>
+    </div>
+    <div class="gallery-item chefs w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/chef_plating_in_homepage.webp" alt="Chefs" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Precision Plating</span>
+        </div>
+    </div>
+    <div class="gallery-item chefs w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/team_sommelier.webp" alt="Chefs" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Head Sommelier</span>
+        </div>
+    </div>
+
+    <!-- Events -->
+    <div class="gallery-item events w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/fine_dining.webp" alt="Events" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Fine Dining</span>
+        </div>
+    </div>
+    <div class="gallery-item events w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/Autumn_Tasting_Menu.webp" alt="Events" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Autumn Tasting</span>
+        </div>
+    </div>
+    <div class="gallery-item events w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/restaw.webp" alt="Events" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Restaurant Week</span>
+        </div>
+    </div>
+    <div class="gallery-item events w-full h-64 md:h-80 relative overflow-hidden rounded-xl group cursor-pointer">
+        <img loading="lazy" src="img/event_cocktails.webp" alt="Events" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 pointer-events-none">
+            <span class="text-white font-serif font-bold text-xl mb-2">Cocktail Event</span>
+        </div>
+    </div>
+
+</div>
 
                 <div class="text-center mt-16" data-aos="fade-up">
                     <a href="404.html" class="btn-primary px-10 py-4 rounded-full text-lg font-bold shadow-lg inline-flex items-center">
@@ -223,6 +328,33 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        
+        // Gallery Filtering
+        const filterBtns = document.querySelectorAll('#gallery-filters button');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active state
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
+                    b.classList.add('bg-white', 'text-gray-600', 'hover:bg-gray-100');
+                });
+                btn.classList.add('bg-primary-600', 'text-white', 'border-primary-600');
+                btn.classList.remove('bg-white', 'text-gray-600', 'hover:bg-gray-100');
+
+                // Filter items
+                const filter = btn.getAttribute('data-filter');
+                galleryItems.forEach(item => {
+                    if(filter === 'all' || item.classList.contains(filter)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         // Initialize AOS animations
         AOS.init({ duration: 900, once: true, offset: 50, easing: 'ease-out-cubic' });
         
