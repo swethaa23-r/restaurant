@@ -1,40 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Stackly Premium Restaurant</title>
     <meta name="description" content="Access your Stackly account to manage your reservations and view exclusive member offers.">
-    <script src="https://cdn.tailwindcss.com">
-        // Mobile Menu Logic
-        const mobileToggle = document.getElementById('mobile-toggle');
-        const mobileClose = document.getElementById('mobile-close');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuContent = document.getElementById('mobile-menu-content');
-        
-        if(mobileToggle && mobileMenu && mobileMenuContent) {
-            mobileToggle.addEventListener('click', () => {
-                mobileMenu.classList.remove('hidden');
-                setTimeout(() => {
-                    mobileMenu.classList.remove('opacity-0');
-                    mobileMenuContent.classList.remove('translate-x-full');
-                    document.body.style.overflow = 'hidden';
-                }, 10);
-            });
-        }
-        
-        if(mobileClose && mobileMenu && mobileMenuContent) {
-            mobileClose.addEventListener('click', () => {
-                mobileMenu.classList.add('opacity-0');
-                mobileMenuContent.classList.add('translate-x-full');
-                document.body.style.overflow = '';
-                setTimeout(() => {
-                    mobileMenu.classList.add('hidden');
-                }, 300);
-            });
-        }
-
-    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -278,6 +249,15 @@
             if (this.value.trim() !== '') {
                 this.classList.remove('input-error');
                 passwordError.classList.add('hidden');
+            }
+        });
+
+        // Reset button state if returning via bfcache
+        window.addEventListener('pageshow', (event) => {
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn && btn.disabled) {
+                btn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>';
+                btn.disabled = false;
             }
         });
     </script>
