@@ -58,7 +58,7 @@
     <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 bg-white shadow-md">
         <div class="container mx-auto px-6 flex justify-between items-center">
             <!-- Left -->
-            <a href="index.html" class="text-3xl font-serif font-bold logo-text text-gray-900 transition-colors duration-300 lg:w-1/4"><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 sm:h-10 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></a>
+            <a href="index.html" class="text-3xl font-serif font-bold logo-text text-gray-900 transition-colors duration-300 lg:w-1/4"><img src="logo.webp" alt="Stackly Logo" class="h-8 sm:h-10 lg:h-12 w-auto inline brightness-0 max-w-[200px] sm:max-w-[240px] object-contain"></a>
             
             <!-- Center -->
             <nav class="hidden lg:flex flex-1 justify-center space-x-8">
@@ -87,7 +87,7 @@
     <div id="mobile-menu" class="fixed inset-0 bg-gray-900/60 z-[60] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
         <div id="mobile-menu-content" class="absolute top-0 right-0 w-full max-w-full h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
             <div class="flex justify-between items-center p-6 border-b border-gray-100">
-                <span><img src="logo.webp" alt="Stackly Logo" class="h-7 sm:h-8 w-auto inline brightness-0 max-w-[180px] sm:max-w-[220px] object-contain"></span>
+                <span><img src="logo.webp" alt="Stackly Logo" class="h-8 sm:h-10 w-auto inline brightness-0 max-w-[200px] sm:max-w-[240px] object-contain"></span>
                 <button id="mobile-close" class="text-2xl text-gray-600 hover:text-gray-900 focus:outline-none transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col p-6 space-y-5 text-lg overflow-y-auto pb-20">
@@ -387,6 +387,72 @@
                     if(typeof closeMenu === 'function') closeMenu();
                 });
             });
+
+            // Form Validation
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    let isValid = true;
+                    
+                    // Name
+                    const name = document.getElementById('name');
+                    const nameError = document.getElementById('nameError');
+                    if (!name.value.trim()) {
+                        nameError.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        nameError.classList.add('hidden');
+                    }
+                    
+                    // Phone
+                    const phone = document.getElementById('phone');
+                    const phoneError = document.getElementById('phoneError');
+                    if (!phone.value.trim()) {
+                        phoneError.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        phoneError.classList.add('hidden');
+                    }
+                    
+                    // Email
+                    const email = document.getElementById('email');
+                    const emailError = document.getElementById('emailError');
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!email.value.trim() || !emailPattern.test(email.value)) {
+                        emailError.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        emailError.classList.add('hidden');
+                    }
+                    
+                    // Subject
+                    const subject = document.getElementById('subject');
+                    const subjectError = document.getElementById('subjectError');
+                    if (!subject.value.trim()) {
+                        subjectError.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        subjectError.classList.add('hidden');
+                    }
+                    
+                    // Message
+                    const message = document.getElementById('message');
+                    const messageError = document.getElementById('messageError');
+                    if (!message.value.trim()) {
+                        messageError.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        messageError.classList.add('hidden');
+                    }
+                    
+                    if (isValid) {
+                        document.getElementById('successMessage').classList.remove('hidden');
+                        contactForm.reset();
+                    }
+                });
+            }
         });
     
     </script>
